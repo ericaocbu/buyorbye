@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import {
   ArrowDownRight,
@@ -9,13 +8,16 @@ import {
   Sparkles,
   Wallet,
 } from "lucide-react";
-import { products } from "../data/products";
+import { useWishlist } from "../context/WishlistContext";
 import ProductCard from "../components/products/ProductCard";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const savedProducts = products.slice(0, 3);
-  const waitCount = products.filter((p) => p.status === "wait").length;
+  const { wishlist, toggleWishlist, isSaved } = useWishlist();
+
+  // Purchase evaluations will be connected in a later step.
+  const waitCount = 0;
+  const savedProducts = wishlist.slice(0, 3);
 
   return (
     <div className="dashboard-page">
@@ -25,12 +27,15 @@ export default function DashboardPage() {
             <Sparkles size={14} />
             A FRESH PERSPECTIVE
           </div>
-          <h2>Good things are worth <em>thinking about.</em></h2>
+          <h2>
+            Good things are worth <em>thinking about.</em>
+          </h2>
           <p>
             Keep track of what catches your eye, compare your options,
             and decide what is truly worth it.
           </p>
         </div>
+
         <button
           className="button button-primary welcome-cta"
           onClick={() => navigate("/app/explore")}
@@ -45,7 +50,7 @@ export default function DashboardPage() {
             <span>Saved items</span>
             <Heart size={18} />
           </div>
-          <div className="stat-value">{products.length}</div>
+          <div className="stat-value">{wishlist.length}</div>
           <div className="stat-caption">Products on your radar</div>
         </article>
 
@@ -64,7 +69,9 @@ export default function DashboardPage() {
             <Wallet size={18} />
           </div>
           <div className="stat-value">Explore</div>
-          <div className="stat-caption">Look for a better fit or price</div>
+          <div className="stat-caption">
+            Look for a better fit or price
+          </div>
           <button
             className="text-link"
             onClick={() => navigate("/app/compare")}
@@ -81,6 +88,7 @@ export default function DashboardPage() {
             <h2>Things on your mind</h2>
             <p>A little collection of things you're considering.</p>
           </div>
+
           <button
             className="button button-secondary"
             onClick={() => navigate("/app/list")}
@@ -89,11 +97,33 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        <div className="product-grid">
-          {savedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {savedProducts.length > 0 ? (
+          <div className="product-grid">
+            {savedProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                saved={isSaved(product.id)}
+                onSave={toggleWishlist}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <Heart size={28} aria-hidden="true" />
+            <h3>Your shortlist starts here</h3>
+            <p>
+              Save products that catch your eye, and they'll show up here
+              so you can revisit them before deciding.
+            </p>
+            <button
+              className="button button-primary"
+              onClick={() => navigate("/app/explore")}
+            >
+              Explore products <ArrowRight size={16} />
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="discover-banner">

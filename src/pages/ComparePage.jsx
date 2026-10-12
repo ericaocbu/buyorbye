@@ -1,31 +1,48 @@
-import { useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Check, X } from "lucide-react";
-import { products } from "../data/products";
+import { ArrowRight, Check, Star, Truck, Tag, X } from "lucide-react";
 
 export default function ComparePage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const selectedIds = location.state?.selectedIds ?? [];
-
-  const selectedProducts = useMemo(
-    () =>
-      selectedIds
-        .map((id) => products.find((product) => product.id === id))
-        .filter(Boolean),
-    [selectedIds]
-  );
+  const selectedProducts = location.state?.selectedProducts ?? [];
 
   function removeProduct(productId) {
-    const remainingIds = selectedProducts
-      .filter((product) => product.id !== productId)
-      .map((product) => product.id);
+    const remainingProducts = selectedProducts.filter(
+      (product) => product.id !== productId,
+    );
 
     navigate("/app/compare", {
-      state: { selectedIds: remainingIds },
+      state: { selectedProducts: remainingProducts },
       replace: true,
     });
+  }
+
+  function formatPrice(value, currency = "USD") {
+    if (
+      value === null ||
+      value === undefined ||
+      value === "" ||
+      !Number.isFinite(Number(value))
+    ) {
+      return null;
+    }
+
+    try {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency,
+      }).format(Number(value));
+    } catch {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(Number(value));
+    }
+  }
+
+  function hasValue(value) {
+    return value !== null && value !== undefined && value !== "";
   }
 
   return (
@@ -34,25 +51,24 @@ export default function ComparePage() {
         <span className="eyebrow">COMPARE YOUR OPTIONS</span>
         <h2>Find the better fit.</h2>
         <p>
-          Look at your options side by side and decide which one
-          makes the most sense for you.
+          Look at your options side by side and decide which one makes the most
+          sense for you.
         </p>
       </div>
 
       {selectedProducts.length < 2 ? (
         <div className="empty-state">
           <div className="empty-state-icon">
-            <ArrowLeft size={26} />
+            <Tag size={26} />
           </div>
+
           <h3>Choose products to compare</h3>
           <p>
-            Head to Explore and select at least two products to see
-            how they stack up.
+            Head to Explore and select at least two products to see how they
+            stack up.
           </p>
-          <Link
-            to="/app/explore"
-            className="button button-primary"
-          >
+
+          <Link to="/app/explore" className="button button-primary">
             Explore products <ArrowRight size={16} />
           </Link>
         </div>
@@ -61,86 +77,184 @@ export default function ComparePage() {
           <div className="section-heading compact-heading">
             <div>
               <h2>Your comparison</h2>
-              <p>
-                {selectedProducts.length} products selected
-              </p>
+              <p>{selectedProducts.length} products selected</p>
             </div>
-            <Link
-              to="/app/explore"
-              className="button button-secondary"
-            >
+
+            <Link to="/app/explore" className="button button-secondary">
               Add more products
             </Link>
           </div>
 
           <div className="comparison-grid">
-            {selectedProducts.map((product) => (
-              <article
-                className="comparison-card"
-                key={product.id}
-              >
-                <div className="comparison-card-header">
-                  <span className="eyebrow">
-                    {product.category}
-                  </span>
-                  <button
-                    type="button"
-                    className="icon-button"
-                    onClick={() => removeProduct(product.id)}
-                    aria-label={`Remove ${product.name} from comparison`}
-                    title="Remove product"
-                  >
-                    <X size={17} />
-                  </button>
-                </div>
+            {selectedProducts.map((product) => {
+              const currency = product.currency || "USD";
+              const price = formatPrice(product.price, currency);
+              const originalPrice = formatPrice(
+                product.originalPrice,
+                currency,
+              );
 
-                <h3>{product.name}</h3>
-                <p className="comparison-brand">{product.brand}</p>
+              const hasDiscount =
+                price &&
+                originalPrice &&
+                Number(product.originalPrice) > Number(product.price);
 
-                <div className="comparison-price">
-                  ${Number(product.price).toFixed(2)}
-                </div>
-                <p className="comparison-retailer">
-                  Listed at {product.retailer}
-                </p>
+              const brand = product.brand?.trim() || "";
+              const category = product.category?.trim() || "";
 
-                <div className="comparison-divider" />
+              const brandIsEstimated =
+                Boolean(product.brandInferred) ||
+                (!brand && Boolean(product.name));
 
-                <div className="comparison-detail">
-                  <span>Brand</span>
-                  <strong>{product.brand || "Not specified"}</strong>
-                </div>
+              const categoryIsEstimated =
+                Boolean(product.categoryInferred) ||
+                (!category && Boolean(product.name));
 
-                <div className="comparison-detail">
-                  <span>Category</span>
-                  <strong>{product.category || "Not specified"}</strong>
-                </div>
+              return (
+                <article className="comparison-card" key={product.id}>
+                  <div className="comparison-card-header">
+                    <span className="eyebrow">
+                      {category || "Category unavailable"}
+                      {category && categoryIsEstimated ? " · Estimated" : ""}
+                    </span>
 
-                <div className="comparison-description">
-                  <h4>About this product</h4>
-                  <p>
-                    {product.description ||
-                      "No product description is available yet."}
+                    <button
+                      type="button"
+                      className="icon-button"
+                      onClick={() => removeProduct(product.id)}
+                      aria-label={`Remove ${product.name} from comparison`}
+                      title="Remove product"
+                    >
+                      <X size={17} />
+                    </button>
+                  </div>
+
+                  {product.imageUrl && (
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name || "Product"}
+                      className="comparison-product-image"
+                      loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.style.display = "none";
+                      }}
+                    />
+                  )}
+
+                  <h3>{product.name || "Unnamed product"}</h3>
+
+                  <p className="comparison-brand">
+                    {brand || "Brand not listed"}
+                    {brand && brandIsEstimated ? " · Estimated" : ""}
                   </p>
-                </div>
 
-                <div className="comparison-verdict">
-                  <Check size={16} />
-                  <span>
-                    {product.price != null
-                      ? "Price available for comparison"
-                      : "Price not available"}
-                  </span>
-                </div>
-              </article>
-            ))}
+                  <div className="comparison-price">
+                    {price || "Price unavailable"}
+                  </div>
+
+                  {hasDiscount && (
+                    <p className="comparison-old-price">
+                      <span>Listed original price: </span>
+                      <s>{originalPrice}</s>
+                    </p>
+                  )}
+
+                  <p className="comparison-retailer">
+                    {product.retailer
+                      ? `Listed at ${product.retailer}`
+                      : "Retailer not listed"}
+                  </p>
+
+                  {hasValue(product.rating) && (
+                    <div className="comparison-detail">
+                      <span>
+                        <Star size={15} /> Rating
+                      </span>
+                      <strong>{Number(product.rating).toFixed(1)} / 5</strong>
+                    </div>
+                  )}
+
+                  {hasValue(product.reviewCount) && (
+                    <div className="comparison-detail">
+                      <span>Review count</span>
+                      <strong>
+                        {Number(product.reviewCount).toLocaleString("en-US")}
+                      </strong>
+                    </div>
+                  )}
+
+                  <div className="comparison-divider" />
+
+                  <div className="comparison-detail">
+                    <span>Brand</span>
+                    <strong>
+                      {brand || "Not available"}
+                      {brand && brandIsEstimated ? " (estimated)" : ""}
+                    </strong>
+                  </div>
+
+                  <div className="comparison-detail">
+                    <span>Category</span>
+                    <strong>
+                      {category || "Not available"}
+                      {category && categoryIsEstimated ? " (estimated)" : ""}
+                    </strong>
+                  </div>
+
+                  {product.condition && (
+                    <div className="comparison-detail">
+                      <span>Condition</span>
+                      <strong>{product.condition}</strong>
+                    </div>
+                  )}
+
+                  {product.delivery && (
+                    <div className="comparison-detail">
+                      <span>
+                        <Truck size={15} /> Delivery
+                      </span>
+                      <strong>{product.delivery}</strong>
+                    </div>
+                  )}
+
+                  {product.description?.trim() ? (
+                    <p className="compare-description">{product.description}</p>
+                  ) : (
+                    <p className="compare-description-fallback">
+                      No description was provided by the retailer.
+                    </p>
+                  )}
+
+                  <div className="comparison-verdict">
+                    {price ? <Check size={16} /> : <Tag size={16} />}
+                    <span>
+                      {price
+                        ? "Price available for comparison"
+                        : "Check the retailer for pricing"}
+                    </span>
+                  </div>
+
+                  {(product.productUrl || product.url) && (
+                    <a
+                      href={product.productUrl || product.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="button button-secondary"
+                    >
+                      View listing <ArrowRight size={16} />
+                    </a>
+                  )}
+                </article>
+              );
+            })}
           </div>
 
           <p className="comparison-disclaimer">
-            Demo data only. Prices and retailer listings are
-            examples, not verified live offers. The lowest price
-            isn't always the best fit—consider the features and
-            what matters most to you.
+            Shopping listings and prices can change. Ratings, delivery details,
+            and other information are displayed only when supplied by the
+            provider. Brand and category labels marked estimated are inferred
+            from listing information and may not be verified. Check the
+            retailer's listing before purchasing.
           </p>
         </>
       )}

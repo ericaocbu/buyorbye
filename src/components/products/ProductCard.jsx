@@ -1,9 +1,4 @@
-import {
-  Heart,
-  ArrowUpRight,
-  GitCompareArrows,
-  ImageOff,
-} from "lucide-react";
+import { Heart, ArrowUpRight, GitCompareArrows, ImageOff } from "lucide-react";
 
 export default function ProductCard({
   product,
@@ -13,8 +8,9 @@ export default function ProductCard({
   onCompare,
   onView,
 }) {
-  const imageUrl = product.imageUrl || product.image;
+  const imageUrl = product.imageUrl || product.image || "";
   const price = Number(product.price);
+
   const hasPrice =
     product.price !== null &&
     product.price !== undefined &&
@@ -31,6 +27,7 @@ export default function ProductCard({
     : null;
 
   const originalPrice = Number(product.originalPrice);
+
   const hasOriginalPrice =
     product.originalPrice !== null &&
     product.originalPrice !== undefined &&
@@ -39,13 +36,15 @@ export default function ProductCard({
     hasPrice &&
     originalPrice > price;
 
+  const brand = product.brand?.trim() || "";
+  const retailer = product.retailer?.trim() || "";
+  const productUrl = product.productUrl || product.url || "";
+
   function handleView() {
     if (onView) {
       onView(product);
       return;
     }
-
-    const productUrl = product.productUrl || product.url;
 
     if (productUrl) {
       window.open(productUrl, "_blank", "noopener,noreferrer");
@@ -63,12 +62,27 @@ export default function ProductCard({
             loading="lazy"
             onError={(event) => {
               event.currentTarget.style.display = "none";
+
+              const placeholder = event.currentTarget.nextElementSibling;
+
+              if (placeholder) {
+                placeholder.style.display = "flex";
+              }
             }}
           />
-        ) : (
+        ) : null}
+
+        {!imageUrl && (
+          <div className="product-image-placeholder">
+            <ImageOff size={28} />
+            <span>No image available</span>
+          </div>
+        )}
+
+        {imageUrl && (
           <div
             className="product-image-placeholder"
-            aria-label="No product image available"
+            style={{ display: "none" }}
           >
             <ImageOff size={28} />
             <span>No image available</span>
@@ -77,26 +91,23 @@ export default function ProductCard({
 
         <button
           type="button"
-          className={`product-save-button ${
-            saved ? "is-saved" : ""
-          }`}
+          className={`product-save-button ${saved ? "is-saved" : ""}`}
           onClick={() => onSave?.(product)}
-          aria-label={
-            saved ? "Remove from wishlist" : "Save to wishlist"
-          }
+          aria-label={saved ? "Remove from wishlist" : "Save to wishlist"}
           aria-pressed={saved}
         >
-          <Heart
-            size={18}
-            fill={saved ? "currentColor" : "none"}
-          />
+          <Heart size={18} fill={saved ? "currentColor" : "none"} />
         </button>
       </div>
 
       <div className="product-card-body">
         <div className="product-meta">
-          <span>{product.brand || "Brand not listed"}</span>
-          <span>{product.retailer || "Retailer not listed"}</span>
+          <span>
+            {brand || "Brand not listed"}
+            {brand && product.brandInferred ? " · Estimated" : ""}
+          </span>
+
+          <span>{retailer || "Retailer not listed"}</span>
         </div>
 
         <h3>{product.name || "Unnamed product"}</h3>
@@ -116,10 +127,15 @@ export default function ProductCard({
           )}
         </div>
 
-        {product.description && (
-          <p className="product-description">
-            {product.description}
+        {product.category && (
+          <p className="product-category">
+            {product.category}
+            {product.categoryInferred ? " · Estimated" : ""}
           </p>
+        )}
+
+        {product.description && (
+          <p className="product-description">{product.description}</p>
         )}
 
         <div className="product-card-actions">
@@ -140,7 +156,7 @@ export default function ProductCard({
             className="icon-button product-open-button"
             aria-label={`View ${product.name || "product"}`}
             onClick={handleView}
-            disabled={!onView && !(product.productUrl || product.url)}
+            disabled={!onView && !productUrl}
             title="View product"
           >
             <ArrowUpRight size={18} />
