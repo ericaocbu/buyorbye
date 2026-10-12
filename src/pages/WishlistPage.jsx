@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../components/products/ProductCard";
@@ -6,6 +7,38 @@ import { useWishlist } from "../context/WishlistContext";
 export default function WishlistPage() {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist, isSaved } = useWishlist();
+  const [selected, setSelected] = useState([]);
+
+  function handleSave(product) {
+    toggleWishlist(product);
+    setSelected((current) =>
+      current.filter((id) => id !== product.id)
+    );
+  }
+
+  function toggleCompare(product) {
+    setSelected((current) => {
+      if (current.includes(product.id)) {
+        return current.filter((id) => id !== product.id);
+      }
+
+      if (current.length >= 3) return current;
+
+      return [...current, product.id];
+    });
+  }
+
+  const selectedProducts = wishlist.filter((product) =>
+    selected.includes(product.id)
+  );
+
+  function openComparison() {
+    if (selectedProducts.length < 2) return;
+
+    navigate("/app/compare", {
+      state: { selectedProducts },
+    });
+  }
 
   return (
     <div className="content-page">
@@ -33,10 +66,46 @@ export default function WishlistPage() {
                 key={product.id}
                 product={product}
                 saved={isSaved(product.id)}
-                onSave={toggleWishlist}
+                onSave={handleSave}
+                selected={selected.includes(product.id)}
+                onCompare={toggleCompare}
               />
             ))}
           </div>
+
+          {selected.length > 0 && (
+            <div className="compare-bar">
+              <div>
+                <strong>
+                  {selectedProducts.length} of 3 products selected
+                </strong>
+                <p>
+                  {selectedProducts.length < 2
+                    ? "Select one more product to compare."
+                    : "Your comparison is ready."}
+                </p>
+              </div>
+
+              <div className="topbar-actions">
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  onClick={() => setSelected([])}
+                >
+                  Clear
+                </button>
+
+                <button
+                  type="button"
+                  className="button button-primary"
+                  disabled={selectedProducts.length < 2}
+                  onClick={openComparison}
+                >
+                  Compare selected
+                </button>
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <div className="empty-state">

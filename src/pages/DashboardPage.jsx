@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowDownRight,
@@ -14,10 +15,41 @@ import ProductCard from "../components/products/ProductCard";
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist, isSaved } = useWishlist();
+  const [selected, setSelected] = useState([]);
 
-  // Purchase evaluations will be connected in a later step.
   const waitCount = 0;
   const savedProducts = wishlist.slice(0, 3);
+
+  function handleSave(product) {
+    toggleWishlist(product);
+    setSelected((current) =>
+      current.filter((id) => id !== product.id)
+    );
+  }
+
+  function toggleCompare(product) {
+    setSelected((current) => {
+      if (current.includes(product.id)) {
+        return current.filter((id) => id !== product.id);
+      }
+
+      if (current.length >= 3) return current;
+
+      return [...current, product.id];
+    });
+  }
+
+  const selectedProducts = savedProducts.filter((product) =>
+    selected.includes(product.id)
+  );
+
+  function openComparison() {
+    if (selectedProducts.length < 2) return;
+
+    navigate("/app/compare", {
+      state: { selectedProducts },
+    });
+  }
 
   return (
     <div className="dashboard-page">
@@ -60,7 +92,9 @@ export default function DashboardPage() {
             <ArrowDownRight size={18} />
           </div>
           <div className="stat-value">{waitCount}</div>
-          <div className="stat-caption">Items you've decided to wait on</div>
+          <div className="stat-caption">
+            Items you've decided to wait on
+          </div>
         </article>
 
         <article className="stat-card stat-card-accent">
@@ -104,7 +138,9 @@ export default function DashboardPage() {
                 key={product.id}
                 product={product}
                 saved={isSaved(product.id)}
-                onSave={toggleWishlist}
+                onSave={handleSave}
+                selected={selected.includes(product.id)}
+                onCompare={toggleCompare}
               />
             ))}
           </div>
@@ -122,6 +158,40 @@ export default function DashboardPage() {
             >
               Explore products <ArrowRight size={16} />
             </button>
+          </div>
+        )}
+
+        {selected.length > 0 && (
+          <div className="compare-bar">
+            <div>
+              <strong>
+                {selectedProducts.length} of 3 products selected
+              </strong>
+              <p>
+                {selectedProducts.length < 2
+                  ? "Select one more product to compare."
+                  : "Your comparison is ready."}
+              </p>
+            </div>
+
+            <div className="topbar-actions">
+              <button
+                type="button"
+                className="button button-secondary"
+                onClick={() => setSelected([])}
+              >
+                Clear
+              </button>
+
+              <button
+                type="button"
+                className="button button-primary"
+                disabled={selectedProducts.length < 2}
+                onClick={openComparison}
+              >
+                Compare selected
+              </button>
+            </div>
           </div>
         )}
       </section>
