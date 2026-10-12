@@ -160,10 +160,6 @@
   margin-bottom: 30px;
 }
 
-.products .empty-state svg {
-  color: white;
-}
-
 .search-field {
   display: flex;
   align-items: center;

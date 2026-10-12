@@ -191,7 +191,7 @@
 }
 
 .empty-state svg {
-  color: var(--accent);
+  color: white
 }
 
 .empty-state h3,
