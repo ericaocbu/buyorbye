@@ -161,6 +161,10 @@
   margin-bottom: 30px;
 }
 
+.products .empty-state svg {
+  color: white;
+}
+
 .search-field {
   display: flex;
   align-items: center;
@@ -285,5 +289,130 @@
 
   .product-image-wrap {
     height: 205px;
+  }
+}
+
+/*///////////////////////////
+/* Side-by-side comparison */
+/*/////////////////////////*/
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, 240px), 1fr)
+  );
+  gap: 20px;
+  align-items: stretch;
+}
+
+.comparison-card {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+}
+
+.comparison-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.comparison-card h3 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.comparison-brand,
+.comparison-retailer {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.comparison-brand {
+  margin: 0;
+}
+
+.comparison-price {
+  margin-top: 24px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.comparison-retailer {
+  margin: 5px 0 0;
+}
+
+.comparison-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 24px 0;
+}
+
+.comparison-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.comparison-detail span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.comparison-detail strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.comparison-description {
+  margin-top: 20px;
+}
+
+.comparison-description h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.comparison-description p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.comparison-verdict {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 24px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.comparison-verdict svg {
+  flex-shrink: 0;
+}
+
+.comparison-disclaimer {
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .comparison-card {
+    padding: 20px;
   }
 }
