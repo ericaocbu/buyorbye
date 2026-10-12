@@ -1,13 +1,12 @@
-import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowDownRight,
   ArrowRight,
-  ArrowUpRight,
+  CheckCircle2,
+  Clock3,
   Heart,
   Search,
   Sparkles,
-  Wallet,
 } from "lucide-react";
 import { useWishlist } from "../context/WishlistContext";
 import ProductCard from "../components/products/ProductCard";
@@ -15,41 +14,12 @@ import ProductCard from "../components/products/ProductCard";
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist, isSaved } = useWishlist();
-  const [selected, setSelected] = useState([]);
 
+  // Connect these counts to real evaluation data in the next step.
   const waitCount = 0;
+  const decisionsCount = 0;
+
   const savedProducts = wishlist.slice(0, 3);
-
-  function handleSave(product) {
-    toggleWishlist(product);
-    setSelected((current) =>
-      current.filter((id) => id !== product.id)
-    );
-  }
-
-  function toggleCompare(product) {
-    setSelected((current) => {
-      if (current.includes(product.id)) {
-        return current.filter((id) => id !== product.id);
-      }
-
-      if (current.length >= 3) return current;
-
-      return [...current, product.id];
-    });
-  }
-
-  const selectedProducts = savedProducts.filter((product) =>
-    selected.includes(product.id)
-  );
-
-  function openComparison() {
-    if (selectedProducts.length < 2) return;
-
-    navigate("/app/compare", {
-      state: { selectedProducts },
-    });
-  }
 
   return (
     <div className="dashboard-page">
@@ -84,33 +54,48 @@ export default function DashboardPage() {
           </div>
           <div className="stat-value">{wishlist.length}</div>
           <div className="stat-caption">Products on your radar</div>
+          <button
+            type="button"
+            className="text-link"
+            onClick={() => navigate("/app/list")}
+          >
+            View my list <ArrowRight size={15} />
+          </button>
         </article>
 
         <article className="stat-card">
           <div className="stat-top">
-            <span>To reconsider</span>
-            <ArrowDownRight size={18} />
+            <span>Waiting on</span>
+            <Clock3 size={18} />
           </div>
           <div className="stat-value">{waitCount}</div>
           <div className="stat-caption">
-            Items you've decided to wait on
+            Products you're holding off on
           </div>
+          <button
+            type="button"
+            className="text-link"
+            onClick={() => navigate("/app/evaluations")}
+          >
+            Review decisions <ArrowRight size={15} />
+          </button>
         </article>
 
         <article className="stat-card stat-card-accent">
           <div className="stat-top">
-            <span>Price comparisons</span>
-            <Wallet size={18} />
+            <span>Decisions made</span>
+            <CheckCircle2 size={18} />
           </div>
-          <div className="stat-value">Explore</div>
+          <div className="stat-value">{decisionsCount}</div>
           <div className="stat-caption">
-            Look for a better fit or price
+            Purchase decisions you've recorded
           </div>
           <button
+            type="button"
             className="text-link"
-            onClick={() => navigate("/app/compare")}
+            onClick={() => navigate("/app/history")}
           >
-            Compare products <ArrowUpRight size={15} />
+            View history <ArrowRight size={15} />
           </button>
         </article>
       </section>
@@ -138,9 +123,7 @@ export default function DashboardPage() {
                 key={product.id}
                 product={product}
                 saved={isSaved(product.id)}
-                onSave={handleSave}
-                selected={selected.includes(product.id)}
-                onCompare={toggleCompare}
+                onSave={toggleWishlist}
               />
             ))}
           </div>
@@ -158,40 +141,6 @@ export default function DashboardPage() {
             >
               Explore products <ArrowRight size={16} />
             </button>
-          </div>
-        )}
-
-        {selected.length > 0 && (
-          <div className="compare-bar">
-            <div>
-              <strong>
-                {selectedProducts.length} of 3 products selected
-              </strong>
-              <p>
-                {selectedProducts.length < 2
-                  ? "Select one more product to compare."
-                  : "Your comparison is ready."}
-              </p>
-            </div>
-
-            <div className="topbar-actions">
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={() => setSelected([])}
-              >
-                Clear
-              </button>
-
-              <button
-                type="button"
-                className="button button-primary"
-                disabled={selectedProducts.length < 2}
-                onClick={openComparison}
-              >
-                Compare selected
-              </button>
-            </div>
           </div>
         )}
       </section>

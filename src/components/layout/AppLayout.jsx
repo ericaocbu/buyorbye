@@ -1,7 +1,6 @@
-
 import { useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
-import { Menu, Search, Plus } from "lucide-react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Menu, Plus } from "lucide-react";
 import Sidebar from "./Sidebar";
 
 const pageTitles = {
@@ -17,6 +16,7 @@ const pageTitles = {
 export default function AppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const title = pageTitles[location.pathname] || "Buy or Bye";
 
   return (
@@ -33,6 +33,7 @@ export default function AppLayout() {
             >
               <Menu size={21} />
             </button>
+
             <div>
               <span className="topbar-eyebrow">YOUR SPACE</span>
               <h1>{title}</h1>
@@ -41,21 +42,9 @@ export default function AppLayout() {
 
           <div className="topbar-actions">
             <button
-              className="topbar-search"
-              onClick={() => {
-                window.location.href = "/app/explore";
-              }}
-            >
-              <Search size={17} />
-              <span>Find something...</span>
-              <kbd>/</kbd>
-            </button>
-
-            <button
+              type="button"
               className="button button-primary topbar-add"
-              onClick={() => {
-                window.location.href = "/app/explore";
-              }}
+              onClick={() => navigate("/app/explore")}
             >
               <Plus size={17} />
               <span>Add item</span>
