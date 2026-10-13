@@ -1,9 +1,25 @@
+
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, Check, Star, Truck, Tag, X } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Star,
+  Truck,
+  Tag,
+  X,
+} from "lucide-react";
+import { useSettings } from "../context/SettingsContext";
 
 export default function ComparePage() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const {
+    settings,
+    formatPrice,
+    ratesLoading,
+    ratesAvailable,
+  } = useSettings();
 
   const selectedProducts = location.state?.selectedProducts ?? [];
 
@@ -18,31 +34,61 @@ export default function ComparePage() {
     });
   }
 
-  function formatPrice(value, currency = "USD") {
-    if (
-      value === null ||
-      value === undefined ||
-      value === "" ||
-      !Number.isFinite(Number(value))
-    ) {
-      return null;
-    }
-
-    try {
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency,
-      }).format(Number(value));
-    } catch {
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(Number(value));
-    }
+  function hasValue(value) {
+    return (
+      value !== null &&
+      value !== undefined &&
+      value !== "" &&
+      Number.isFinite(Number(value))
+    );
   }
 
-  function hasValue(value) {
-    return value !== null && value !== undefined && value !== "";
+  function getDisplayPrice(value, sourceCurrency = "USD") {
+    if (!hasValue(value)) {
+      return {
+        text: null,
+        convertedValue: null,
+      };
+    }
+
+    const convertedValue =
+      sourceCurrency === settings.currency
+        ? Number(value)
+        : null;
+
+    const text = formatPrice(value, sourceCurrency);
+
+    return {
+      text,
+      convertedValue:
+        convertedValue !== null || text !== null
+          ? sourceCurrency === settings.currency
+            ? Number(value)
+            : null
+          : null,
+    };
+  }
+
+  function getPriceLabel(value, sourceCurrency = "USD") {
+    if (!hasValue(value)) {
+      return "Price unavailable";
+    }
+
+    const formatted = formatPrice(value, sourceCurrency);
+
+    if (formatted) {
+      return formatted;
+    }
+
+    if (sourceCurrency !== settings.currency) {
+      return ratesLoading
+        ? "Converting price…"
+        : ratesAvailable
+          ? "Price unavailable"
+          : "Exchange rate unavailable";
+    }
+
+    return "Price unavailable";
   }
 
   return (
@@ -77,7 +123,10 @@ export default function ComparePage() {
           <div className="section-heading compact-heading">
             <div>
               <h2>Your comparison</h2>
-              <p>{selectedProducts.length} products selected</p>
+              <p>
+                {selectedProducts.length} products selected · Prices shown in{" "}
+                {settings.currency}
+              </p>
             </div>
 
             <Link to="/app/explore" className="button button-secondary">
@@ -87,17 +136,31 @@ export default function ComparePage() {
 
           <div className="comparison-grid">
             {selectedProducts.map((product) => {
-              const currency = product.currency || "USD";
-              const price = formatPrice(product.price, currency);
-              const originalPrice = formatPrice(
+              const sourceCurrency = product.currency || "USD";
+              const price = getDisplayPrice(
+                product.price,
+                sourceCurrency,
+              );
+              const originalPrice = getDisplayPrice(
                 product.originalPrice,
-                currency,
+                sourceCurrency,
               );
 
-              const hasDiscount =
-                price &&
-                originalPrice &&
-                Number(product.originalPrice) > Number(product.price);
+              const priceLabel = getPriceLabel(
+                product.price,
+                sourceCurrency,
+              );
+              const originalPriceLabel = getPriceLabel(
+                product.originalPrice,
+                sourceCurrency,
+              );
+
+              const canShowDiscount =
+                hasValue(product.price) &&
+                hasValue(product.originalPrice) &&
+                Number(product.originalPrice) > Number(product.price) &&
+                Boolean(price.text) &&
+                Boolean(originalPrice.text);
 
               const brand = product.brand?.trim() || "";
               const category = product.category?.trim() || "";
@@ -148,14 +211,12 @@ export default function ComparePage() {
                     {brand && brandIsEstimated ? " · Estimated" : ""}
                   </p>
 
-                  <div className="comparison-price">
-                    {price || "Price unavailable"}
-                  </div>
+                  <div className="comparison-price">{priceLabel}</div>
 
-                  {hasDiscount && (
+                  {canShowDiscount && (
                     <p className="comparison-old-price">
                       <span>Listed original price: </span>
-                      <s>{originalPrice}</s>
+                      <s>{originalPriceLabel}</s>
                     </p>
                   )}
 
@@ -226,9 +287,9 @@ export default function ComparePage() {
                   )}
 
                   <div className="comparison-verdict">
-                    {price ? <Check size={16} /> : <Tag size={16} />}
+                    {price.text ? <Check size={16} /> : <Tag size={16} />}
                     <span>
-                      {price
+                      {price.text
                         ? "Price available for comparison"
                         : "Check the retailer for pricing"}
                     </span>
@@ -250,11 +311,13 @@ export default function ComparePage() {
           </div>
 
           <p className="comparison-disclaimer">
-            Shopping listings and prices can change. Ratings, delivery details,
-            and other information are displayed only when supplied by the
-            provider. Brand and category labels marked estimated are inferred
-            from listing information and may not be verified. Check the
-            retailer's listing before purchasing.
+            Prices are displayed in your selected currency using available
+            exchange rates; converted prices are estimates, not retailer
+            checkout prices. Shopping listings and prices can change. Ratings,
+            delivery details, and other information are displayed only when
+            supplied by the provider. Brand and category labels marked
+            estimated are inferred from listing information and may not be
+            verified. Check the retailer's listing before purchasing.
           </p>
         </>
       )}

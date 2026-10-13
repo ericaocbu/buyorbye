@@ -1,3 +1,4 @@
+
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -13,6 +14,7 @@ import {
 
 import { useWishlist } from "../context/WishlistContext";
 import { useEvaluations } from "../context/EvaluationContext";
+import { useSettings } from "../context/SettingsContext";
 
 const initialAnswers = {
   need: "",
@@ -22,22 +24,19 @@ const initialAnswers = {
   alternatives: "",
 };
 
-function formatCurrency(value) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function getRecommendation(product, answers) {
-  const price = Number(product?.price);
+function getRecommendation(product, answers, settings, convertPrice) {
+  const price = convertPrice(
+    product?.price,
+    product?.currency || "USD",
+    settings.currency,
+  );
 
   const hasPrice =
     product?.price !== null &&
     product?.price !== undefined &&
     product?.price !== "" &&
-    Number.isFinite(price);
+    Number.isFinite(Number(product.price)) &&
+    price !== null;
 
   const budget = Number(answers.budget);
 
@@ -56,6 +55,17 @@ function getRecommendation(product, answers) {
     return null;
   }
 
+  const currency = settings.currency;
+  const format = (value) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 2,
+    }).format(value);
+
+  const priorities = settings.priorities || [];
+  const style = settings.reminder || "balanced";
+
   if (answers.need === "does_not_solve") {
     return {
       decision: "BYE",
@@ -71,7 +81,7 @@ function getRecommendation(product, answers) {
     return {
       decision: "WAIT",
       reasons: [
-        "We couldn't verify a usable price for this listing.",
+        "We couldn't verify a usable price in your selected currency.",
       ],
       nextStep:
         "Check the retailer's current price before deciding whether it fits your budget.",
@@ -80,16 +90,16 @@ function getRecommendation(product, answers) {
 
   if (price > budget) {
     const reasons = [
-      `At ${formatCurrency(price)}, this item is above your comfortable budget of ${formatCurrency(budget)}.`,
+      `At ${format(price)}, this item is above your comfortable budget of ${format(budget)}.`,
     ];
 
     if (answers.urgency === "need_now") {
       reasons.push(
-        "You need it soon, so finding an affordable option is especially important."
+        "You need it soon, so finding an affordable option is especially important.",
       );
     } else {
       reasons.push(
-        "Buying it now could put pressure on the amount you feel comfortable spending."
+        "Buying it now could put pressure on the amount you feel comfortable spending.",
       );
     }
 
@@ -125,7 +135,7 @@ function getRecommendation(product, answers) {
     };
   }
 
-  if (answers.alternatives === "not_compared") {
+  if (answers.alternatives === "not_compared" && style !== "practical") {
     return {
       decision: "WAIT",
       reasons: [
@@ -157,7 +167,7 @@ function getRecommendation(product, answers) {
     answers.need !== "replace"
   ) {
     return {
-      decision: "WAIT",
+      decision: style === "practical" ? "WAIT" : "WAIT",
       reasons: [
         "You expect to use this item infrequently.",
         "Its value may depend on whether occasional use justifies the cost.",
@@ -171,20 +181,20 @@ function getRecommendation(product, answers) {
 
   if (answers.need === "replace") {
     reasons.push(
-      "You need a replacement for something you already use."
+      "You need a replacement for something you already use.",
     );
   } else if (answers.need === "recurring_problem") {
     reasons.push(
-      "This purchase could help solve a recurring problem."
+      "This purchase could help solve a recurring problem.",
     );
   } else {
     reasons.push(
-      "This product could be useful, but it isn't essential."
+      "This product could be useful, but it isn't essential.",
     );
   }
 
   reasons.push(
-    "The listed price is within your comfortable budget."
+    `The listed price of ${format(price)} is within your comfortable budget.`,
   );
 
   if (answers.usage === "daily") {
@@ -195,7 +205,43 @@ function getRecommendation(product, answers) {
     reasons.push("You expect to use it occasionally.");
   }
 
-  if (answers.urgency === "no_rush") {
+  if (priorities.includes("price")) {
+    reasons.push(
+      "Price is one of your priorities, so consider checking whether another retailer offers a better deal.",
+    );
+  }
+
+  if (priorities.includes("quality")) {
+    if (Number.isFinite(Number(product?.rating))) {
+      reasons.push(
+        `This listing has a rating of ${Number(product.rating).toFixed(1)} out of 5. Check the reviews to judge whether the quality meets your expectations.`,
+      );
+    } else {
+      reasons.push(
+        "A product rating isn't available, so quality hasn't been verified.",
+      );
+    }
+  }
+
+  if (priorities.includes("reviews")) {
+    if (Number.isFinite(Number(product?.reviewCount))) {
+      reasons.push(
+        `The listing reports ${Number(product.reviewCount).toLocaleString("en-US")} reviews. Read recent feedback to see whether buyers' experiences match your needs.`,
+      );
+    } else {
+      reasons.push(
+        "A review count isn't available, so customer feedback hasn't been verified.",
+      );
+    }
+  }
+
+  if (priorities.includes("longevity")) {
+    reasons.push(
+      "Product durability information isn't available here. Check the warranty, materials, and long-term reviews before relying on it to last.",
+    );
+  }
+
+  if (answers.urgency === "no_rush" && style !== "practical") {
     return {
       decision: "WAIT",
       reasons: [
@@ -229,6 +275,37 @@ function getRecommendation(product, answers) {
       reasons,
       nextStep:
         "If the features and retailer check out, this looks like a reasonable purchase for your needs.",
+    };
+  }
+
+  if (
+    style === "practical" &&
+    ["replace", "recurring_problem"].includes(answers.need) &&
+    ["daily", "weekly"].includes(answers.usage)
+  ) {
+    return {
+      decision: "BUY",
+      reasons: [
+        ...reasons,
+        "Your answers point to a real need and regular use, so this may be a practical choice within your budget.",
+        ...(answers.alternatives === "not_compared"
+          ? ["You haven't compared alternatives yet, so you may still find better value."]
+          : []),
+      ],
+      nextStep:
+        "Confirm the key features, return policy, and final checkout price before purchasing.",
+    };
+  }
+
+  if (style === "cautious") {
+    return {
+      decision: "WAIT",
+      reasons: [
+        ...reasons,
+        "Your cautious decision style favors gathering more information before committing.",
+      ],
+      nextStep:
+        "Review the available product information and compare alternatives before making the final call.",
     };
   }
 
@@ -272,6 +349,15 @@ export default function EvaluationsPage() {
   const { wishlist } = useWishlist();
   const { evaluations, saveEvaluation, getEvaluation } = useEvaluations();
 
+  const {
+    settings,
+    updateSettings,
+    convertPrice,
+    formatPrice,
+    ratesLoading,
+    ratesAvailable,
+  } = useSettings();
+
   const initialProduct =
     location.state?.product ??
     location.state?.selectedProduct ??
@@ -299,15 +385,22 @@ export default function EvaluationsPage() {
   }, [wishlist, evaluations, initialProduct]);
 
   const [selectedProductId, setSelectedProductId] = useState(
-    initialProduct?.id ? String(initialProduct.id) : ""
+    initialProduct?.id ? String(initialProduct.id) : "",
   );
 
   const [answers, setAnswers] = useState(() => {
-    if (!initialProduct?.id) return initialAnswers;
+    if (!initialProduct?.id) {
+      return {
+        ...initialAnswers,
+        budget: settings.budget,
+      };
+    }
 
     return (
-      getEvaluation(String(initialProduct.id))?.answers ??
-      initialAnswers
+      getEvaluation(String(initialProduct.id))?.answers ?? {
+        ...initialAnswers,
+        budget: settings.budget,
+      }
     );
   });
 
@@ -323,7 +416,7 @@ export default function EvaluationsPage() {
 
   const selectedProduct =
     availableProducts.find(
-      (product) => String(product.id) === selectedProductId
+      (product) => String(product.id) === selectedProductId,
     ) ?? null;
 
   const existingEvaluation = selectedProduct
@@ -331,7 +424,7 @@ export default function EvaluationsPage() {
     : null;
 
   const recommendation = selectedProduct
-    ? getRecommendation(selectedProduct, answers)
+    ? getRecommendation(selectedProduct, answers, settings, convertPrice)
     : null;
 
   const RecommendationIcon = recommendation
@@ -353,12 +446,20 @@ export default function EvaluationsPage() {
 
     const existing = getEvaluation(productId);
 
-    setAnswers(existing?.answers ?? initialAnswers);
+    setAnswers(
+      existing?.answers ?? {
+        ...initialAnswers,
+        budget: settings.budget,
+      },
+    );
     setFinalDecision(existing?.finalDecision ?? "");
   }
 
   function resetAnswers() {
-    setAnswers(initialAnswers);
+    setAnswers({
+      ...initialAnswers,
+      budget: settings.budget,
+    });
     setFinalDecision("");
     setShowSuccess(false);
   }
@@ -380,10 +481,20 @@ export default function EvaluationsPage() {
 
   function evaluateAnotherProduct() {
     setSelectedProductId("");
-    setAnswers(initialAnswers);
+    setAnswers({
+      ...initialAnswers,
+      budget: settings.budget,
+    });
     setFinalDecision("");
     setShowSuccess(false);
   }
+
+  const selectedProductPrice = selectedProduct
+    ? formatPrice(
+        selectedProduct.price,
+        selectedProduct.currency || "USD",
+      )
+    : null;
 
   return (
     <div className="evaluation-page">
@@ -392,7 +503,7 @@ export default function EvaluationsPage() {
         <h2>Is it worth it to you?</h2>
         <p>
           Think through what matters to you. We'll use your answers
-          to help you decide whether to buy, wait, or move on.
+          and preferences to help you decide whether to buy, wait, or move on.
         </p>
       </section>
 
@@ -475,12 +586,12 @@ export default function EvaluationsPage() {
                     {selectedProduct.retailer || "Retailer not listed"}
                   </span>
                   <b>
-                    {selectedProduct.price !== null &&
-                    selectedProduct.price !== undefined &&
-                    selectedProduct.price !== "" &&
-                    Number.isFinite(Number(selectedProduct.price))
-                      ? formatCurrency(Number(selectedProduct.price))
-                      : "Price unavailable"}
+                    {selectedProductPrice ||
+                      (ratesLoading && settings.currency !== (selectedProduct.currency || "USD")
+                        ? "Converting price…"
+                        : ratesAvailable
+                          ? "Price unavailable"
+                          : "Exchange rate unavailable")}
                   </b>
                 </div>
               </div>
@@ -537,18 +648,26 @@ export default function EvaluationsPage() {
                   </label>
 
                   <p className="evaluation-help">
-                    Use your personal limit, not what you think the
-                    product should cost.
+                    Your default budget is {settings.budget || "not set"}{" "}
+                    {settings.currency}. Adjust it for this purchase if needed.
                   </p>
 
                   <div className="evaluation-budget-input">
-                    <span>$</span>
+                    <span>
+                      {settings.currency === "GBP"
+                        ? "£"
+                        : settings.currency === "EUR"
+                          ? "€"
+                          : settings.currency === "CAD"
+                            ? "CA$"
+                            : "$"}
+                    </span>
                     <input
                       id="evaluation-budget"
                       type="number"
                       min="0"
                       step="0.01"
-                      placeholder="e.g. 150"
+                      placeholder={settings.budget || "150"}
                       value={answers.budget}
                       onChange={(event) =>
                         updateAnswer("budget", event.target.value)
@@ -604,10 +723,7 @@ export default function EvaluationsPage() {
                   <legend>Have you looked at other options?</legend>
 
                   {[
-                    [
-                      "compared",
-                      "Yes, I've compared alternatives",
-                    ],
+                    ["compared", "Yes, I've compared alternatives"],
                     ["not_compared", "Not yet"],
                     [
                       "cheaper_found",
@@ -747,8 +863,7 @@ export default function EvaluationsPage() {
                     <>
                       <span
                         className={`recommendation-label ${
-                          decisionDetails[recommendation.decision]
-                            .className
+                          decisionDetails[recommendation.decision].className
                         }`}
                       >
                         {recommendation.decision}
@@ -801,9 +916,7 @@ export default function EvaluationsPage() {
                           type="button"
                           key={decision}
                           className={`evaluation-decision-button ${
-                            finalDecision === decision
-                              ? "is-selected"
-                              : ""
+                            finalDecision === decision ? "is-selected" : ""
                           }`}
                           aria-pressed={finalDecision === decision}
                           onClick={() => setFinalDecision(decision)}

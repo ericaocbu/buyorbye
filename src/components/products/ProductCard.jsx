@@ -1,4 +1,6 @@
+
 import { Heart, ArrowUpRight, GitCompareArrows, ImageOff } from "lucide-react";
+import { useSettings } from "../../context/SettingsContext";
 
 export default function ProductCard({
   product,
@@ -8,7 +10,10 @@ export default function ProductCard({
   onCompare,
   onView,
 }) {
+  const { settings, formatPrice, ratesLoading, ratesAvailable } = useSettings();
+
   const imageUrl = product.imageUrl || product.image || "";
+  const sourceCurrency = product.currency || "USD";
   const price = Number(product.price);
 
   const hasPrice =
@@ -17,13 +22,8 @@ export default function ProductCard({
     product.price !== "" &&
     Number.isFinite(price);
 
-  const currency = product.currency || "USD";
-
   const formattedPrice = hasPrice
-    ? new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency,
-      }).format(price)
+    ? formatPrice(price, sourceCurrency)
     : null;
 
   const originalPrice = Number(product.originalPrice);
@@ -35,6 +35,22 @@ export default function ProductCard({
     Number.isFinite(originalPrice) &&
     hasPrice &&
     originalPrice > price;
+
+  const formattedOriginalPrice = hasOriginalPrice
+    ? formatPrice(originalPrice, sourceCurrency)
+    : null;
+
+  const needsConversion = sourceCurrency !== settings.currency;
+
+  let priceLabel = formattedPrice || "Price unavailable";
+
+  if (hasPrice && !formattedPrice && needsConversion) {
+    priceLabel = ratesLoading
+      ? "Converting price…"
+      : ratesAvailable
+        ? "Price unavailable"
+        : "Exchange rate unavailable";
+  }
 
   const brand = product.brand?.trim() || "";
   const retailer = product.retailer?.trim() || "";
@@ -113,16 +129,11 @@ export default function ProductCard({
         <h3>{product.name || "Unnamed product"}</h3>
 
         <div className="product-price-row">
-          <span className="product-price">
-            {formattedPrice || "Price unavailable"}
-          </span>
+          <span className="product-price">{priceLabel}</span>
 
-          {hasOriginalPrice && (
+          {hasOriginalPrice && formattedOriginalPrice && (
             <span className="product-old-price">
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency,
-              }).format(originalPrice)}
+              {formattedOriginalPrice}
             </span>
           )}
         </div>
