@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   Check,
@@ -12,28 +11,18 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+import { useSettings } from "../context/SettingsContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useEvaluations } from "../context/EvaluationContext";
 
 const STORAGE_KEY = "buyorbye-settings";
 
-const defaultSettings = {
-  currency: "USD",
-  budget: "150",
-  priorities: ["price", "quality"],
-  reminder: "balanced",
+const currencySymbols = {
+  USD: "$",
+  CAD: "CA$",
+  GBP: "£",
+  EUR: "€",
 };
-
-function readSettings() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved
-      ? { ...defaultSettings, ...JSON.parse(saved) }
-      : defaultSettings;
-  } catch {
-    return defaultSettings;
-  }
-}
 
 const priorityOptions = [
   {
@@ -44,7 +33,7 @@ const priorityOptions = [
   {
     value: "quality",
     label: "Quality",
-    description: "Focus on durability and performance.",
+    description: "Focus on product ratings and performance.",
   },
   {
     value: "reviews",
@@ -59,52 +48,49 @@ const priorityOptions = [
 ];
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState(readSettings);
+  const {
+    settings,
+    updateSettings,
+    saveSettings: persistSettings,
+    resetSettings: resetSharedSettings,
+    ratesLoading,
+    ratesAvailable,
+    rateDate,
+  } = useSettings();
+
   const [saved, setSaved] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const { wishlist, removeFromWishlist } = useWishlist();
-  const {
-    evaluations,
-    removeEvaluation,
-  } = useEvaluations();
+  const { evaluations, removeEvaluation } = useEvaluations();
 
   function updateSetting(key, value) {
-    setSettings((current) => ({
-      ...current,
-      [key]: value,
-    }));
+    updateSettings({ [key]: value });
     setSaved(false);
   }
 
   function togglePriority(value) {
-    setSettings((current) => {
-      const selected = current.priorities.includes(value);
+    const priorities = settings.priorities.includes(value)
+      ? settings.priorities.filter((item) => item !== value)
+      : [...settings.priorities, value];
 
-      return {
-        ...current,
-        priorities: selected
-          ? current.priorities.filter((item) => item !== value)
-          : [...current.priorities, value],
-      };
-    });
+    updateSettings({ priorities });
     setSaved(false);
   }
 
-  function saveSettings(event) {
+  function handleSaveSettings(event) {
     event.preventDefault();
 
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-      setSaved(true);
-    } catch {
-      setSaved(false);
+    const success = persistSettings(settings);
+    setSaved(success);
+
+    if (!success) {
       window.alert("Your settings could not be saved. Please try again.");
     }
   }
 
-  function resetSettings() {
-    setSettings(defaultSettings);
+  function handleResetSettings() {
+    resetSharedSettings();
     setSaved(false);
   }
 
@@ -125,8 +111,9 @@ export default function SettingsPage() {
 
     link.href = url;
     link.download = "buyorbye-data.json";
+    document.body.appendChild(link);
     link.click();
-
+    link.remove();
     URL.revokeObjectURL(url);
   }
 
@@ -136,12 +123,15 @@ export default function SettingsPage() {
       localStorage.removeItem("buyorbye-evaluations");
       localStorage.removeItem(STORAGE_KEY);
 
-      wishlist.forEach((product) => removeFromWishlist(product.id));
-      evaluations.forEach((evaluation) =>
-        removeEvaluation(evaluation.id)
-      );
+      wishlist.forEach((product) => {
+        removeFromWishlist(product.id);
+      });
 
-      setSettings(defaultSettings);
+      evaluations.forEach((evaluation) => {
+        removeEvaluation(evaluation.id);
+      });
+
+      resetSharedSettings();
       setSaved(false);
       setShowClearConfirm(false);
     } catch {
@@ -151,6 +141,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     document.title = "Settings | Buy or Bye";
+
     return () => {
       document.title = "Buy or Bye";
     };
@@ -167,7 +158,7 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <form onSubmit={saveSettings}>
+      <form onSubmit={handleSaveSettings}>
         <section className="settings-card">
           <div className="settings-section-heading">
             <div className="settings-section-icon">
@@ -180,18 +171,21 @@ export default function SettingsPage() {
           </div>
 
           <div className="settings-field">
-            <label htmlFor="default-budget">Comfortable spending amount</label>
+            <label htmlFor="default-budget">
+              Comfortable spending amount
+            </label>
             <p className="settings-field-help">
               Your typical budget for a single purchase. You can still
               change the budget for each evaluation.
             </p>
+
             <div className="settings-input-wrap">
-              <span>$</span>
+              <span>{currencySymbols[settings.currency] || "$"}</span>
               <input
                 id="default-budget"
                 type="number"
                 min="0"
-                step="1"
+                step="0.01"
                 value={settings.budget}
                 onChange={(event) =>
                   updateSetting("budget", event.target.value)
@@ -204,8 +198,10 @@ export default function SettingsPage() {
           <div className="settings-field">
             <label htmlFor="default-currency">Display currency</label>
             <p className="settings-field-help">
-              Choose the currency used for your budget preference.
+              Choose the currency used to display prices and evaluate your
+              budget.
             </p>
+
             <select
               id="default-currency"
               value={settings.currency}
@@ -219,9 +215,13 @@ export default function SettingsPage() {
               <option value="GBP">GBP — British Pound</option>
               <option value="EUR">EUR — Euro</option>
             </select>
+
             <p className="settings-field-note">
-              Product search prices are currently supplied in USD. This
-              setting records your preference but does not convert prices.
+              {ratesLoading
+                ? "Loading exchange rates…"
+                : ratesAvailable
+                  ? `Prices are converted from USD using the latest available reference rates${rateDate ? ` dated ${rateDate}` : ""}.`
+                  : "Exchange rates are unavailable. Prices in other currencies cannot currently be converted."}
             </p>
           </div>
         </section>
@@ -255,9 +255,11 @@ export default function SettingsPage() {
                     checked={checked}
                     onChange={() => togglePriority(option.value)}
                   />
+
                   <span className="settings-custom-check">
                     {checked && <Check size={14} />}
                   </span>
+
                   <span className="settings-priority-copy">
                     <strong>{option.label}</strong>
                     <span>{option.description}</span>
@@ -266,9 +268,11 @@ export default function SettingsPage() {
               );
             })}
           </div>
+
           <p className="settings-field-note">
-            These priorities are saved for future personalization. They
-            don't currently change the recommendation algorithm.
+            These preferences can guide purchase recommendations. Some
+            factors, such as product durability, may not be available in
+            search results.
           </p>
         </section>
 
@@ -285,6 +289,7 @@ export default function SettingsPage() {
 
           <div className="settings-field">
             <label htmlFor="decision-style">Your approach</label>
+
             <select
               id="decision-style"
               className="settings-select"
@@ -293,13 +298,21 @@ export default function SettingsPage() {
                 updateSetting("reminder", event.target.value)
               }
             >
-              <option value="cautious">Extra cautious — take more time</option>
-              <option value="balanced">Balanced — weigh needs and value</option>
-              <option value="practical">Practical — focus on solving the need</option>
+              <option value="cautious">
+                Extra cautious — take more time
+              </option>
+              <option value="balanced">
+                Balanced — weigh needs and value
+              </option>
+              <option value="practical">
+                Practical — focus on solving the need
+              </option>
             </select>
+
             <p className="settings-field-note">
-              This is a saved preference for now; it doesn't yet alter
-              Buy or Bye recommendations.
+              Your decision style is saved with your preferences and can
+              guide how purchase recommendations weigh uncertainty, needs,
+              and value.
             </p>
           </div>
         </section>
@@ -308,7 +321,7 @@ export default function SettingsPage() {
           <button
             type="button"
             className="button button-secondary"
-            onClick={resetSettings}
+            onClick={handleResetSettings}
           >
             <RotateCcw size={15} />
             Reset preferences
@@ -316,11 +329,12 @@ export default function SettingsPage() {
 
           <div className="settings-save-actions">
             {saved && (
-              <span className="settings-saved-message">
+              <span className="settings-saved-message" role="status">
                 <Check size={15} />
                 Preferences saved
               </span>
             )}
+
             <button type="submit" className="button button-primary">
               Save preferences
             </button>
@@ -367,6 +381,7 @@ export default function SettingsPage() {
               preferences from this browser.
             </p>
           </div>
+
           <button
             type="button"
             className="button button-danger-outline"
@@ -383,10 +398,12 @@ export default function SettingsPage() {
               <AlertTriangle size={18} />
               <strong>Are you sure?</strong>
             </div>
+
             <p>
               This removes all saved products and evaluations from this
               browser. Export your data first if you'd like to keep a copy.
             </p>
+
             <div className="settings-confirm-actions">
               <button
                 type="button"
@@ -395,6 +412,7 @@ export default function SettingsPage() {
               >
                 Cancel
               </button>
+
               <button
                 type="button"
                 className="button button-danger"
