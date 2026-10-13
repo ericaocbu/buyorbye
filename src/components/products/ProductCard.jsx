@@ -1,4 +1,3 @@
-
 import { Heart, ArrowUpRight, GitCompareArrows, ImageOff } from "lucide-react";
 import { useSettings } from "../../context/SettingsContext";
 

@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
         <article className="stat-card stat-card-accent">
           <div className="stat-top">
-            <span>Decisions made</span>
+            <span>Evaluations completed</span>
             <CheckCircle2 size={18} />
           </div>
           <div className="stat-value">{decisionsCount}</div>

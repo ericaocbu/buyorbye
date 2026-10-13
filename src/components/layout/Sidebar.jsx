@@ -1,4 +1,3 @@
-
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -21,27 +20,39 @@ const navigation = [
   { label: "Decision History", path: "/app/history", icon: History },
 ];
 
+function getNavLinkClass({ isActive }) {
+  return `nav-link ${isActive ? "nav-link-active" : ""}`;
+}
+
 export default function Sidebar({ open, onClose }) {
   return (
     <>
       {open && (
         <button
+          type="button"
           className="sidebar-overlay"
           aria-label="Close navigation"
           onClick={onClose}
         />
       )}
 
-      <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
+      <aside
+        id="app-sidebar"
+        className={`sidebar ${open ? "sidebar-open" : ""}`}
+        aria-label="Main navigation"
+      >
         <div className="brand">
           <div className="brand-icon">
-            <ShoppingBag size={21} />
+            <ShoppingBag size={21} aria-hidden="true" />
           </div>
+
           <div>
             <span className="brand-name">buy or bye</span>
             <span className="brand-tagline">Shop with intention.</span>
           </div>
+
           <button
+            type="button"
             className="icon-button sidebar-close"
             onClick={onClose}
             aria-label="Close menu"
@@ -52,18 +63,16 @@ export default function Sidebar({ open, onClose }) {
 
         <div className="nav-section-label">WORKSPACE</div>
 
-        <nav className="nav-list">
+        <nav className="nav-list" aria-label="Workspace">
           {navigation.map(({ label, path, icon: Icon, end }) => (
             <NavLink
               key={path}
               to={path}
               end={end}
               onClick={onClose}
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "nav-link-active" : ""}`
-              }
+              className={getNavLinkClass}
             >
-              <Icon size={19} strokeWidth={1.8} />
+              <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
               <span>{label}</span>
             </NavLink>
           ))}
@@ -71,20 +80,24 @@ export default function Sidebar({ open, onClose }) {
 
         <div className="sidebar-bottom">
           <div className="sidebar-note">
-            <span className="note-sparkle">✳</span>
+            <span className="note-sparkle" aria-hidden="true">✳</span>
             <p>Start shopping without regret!</p>
           </div>
 
-          <NavLink to="/app/settings" onClick={onClose} className="nav-link">
-            <Settings size={19} strokeWidth={1.8} />
+          <NavLink
+            to="/app/settings"
+            onClick={onClose}
+            className={getNavLinkClass}
+          >
+            <Settings size={19} strokeWidth={1.8} aria-hidden="true" />
             <span>Settings</span>
           </NavLink>
 
           <div className="profile-row">
-            <div className="avatar">B</div>
+            <div className="avatar" aria-hidden="true">Y</div>
             <div>
               <strong>Your workspace</strong>
-              <span>Personal account</span>
+              <span>Personal workspace</span>
             </div>
           </div>
         </div>
