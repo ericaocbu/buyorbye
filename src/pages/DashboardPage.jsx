@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
@@ -8,16 +7,22 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
+
 import { useWishlist } from "../context/WishlistContext";
+import { useEvaluations } from "../context/EvaluationContext";
 import ProductCard from "../components/products/ProductCard";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { wishlist, toggleWishlist, isSaved } = useWishlist();
 
-  // Connect these counts to real evaluation data in the next step.
-  const waitCount = 0;
-  const decisionsCount = 0;
+  const { wishlist, toggleWishlist, isSaved } = useWishlist();
+  const { evaluations } = useEvaluations();
+
+  const decisionsCount = evaluations.length;
+
+  const waitCount = evaluations.filter(
+    (evaluation) => evaluation.finalDecision === "WAIT"
+  ).length;
 
   const savedProducts = wishlist.slice(0, 3);
 
@@ -75,7 +80,7 @@ export default function DashboardPage() {
           <button
             type="button"
             className="text-link"
-            onClick={() => navigate("/app/evaluations")}
+            onClick={() => navigate("/app/history")}
           >
             Review decisions <ArrowRight size={15} />
           </button>
