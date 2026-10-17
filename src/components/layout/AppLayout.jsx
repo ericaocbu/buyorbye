@@ -1,42 +1,77 @@
+
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Menu, Plus } from "lucide-react";
 import Sidebar from "./Sidebar";
 
-const pageTitles = {
-  "/app": "Dashboard",
-  "/app/explore": "Explore products",
-  "/app/compare": "Compare products",
-  "/app/list": "My list",
-  "/app/evaluations": "Purchase evaluations",
-  "/app/history": "Decision history",
-  "/app/settings": "Settings",
+const pageInfo = {
+  "/": {
+    title: "Dashboard",
+    eyebrow: "YOUR OVERVIEW",
+  },
+  "/explore": {
+    title: "Explore products",
+    eyebrow: "FIND YOUR NEXT PURCHASE",
+  },
+  "/compare": {
+    title: "Compare products",
+    eyebrow: "WEIGH YOUR OPTIONS",
+  },
+  "/list": {
+    title: "My wishlist",
+    eyebrow: "SAVED FOR LATER",
+  },
+  "/evaluations": {
+    title: "Purchase evaluations",
+    eyebrow: "MAKE YOUR DECISION",
+  },
+  "/history": {
+    title: "Decision history",
+    eyebrow: "YOUR PAST DECISIONS",
+  },
+  "/settings": {
+    title: "Settings",
+    eyebrow: "MAKE IT YOURS",
+  },
 };
 
 export default function AppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const title = pageTitles[location.pathname] || "Buy or Bye";
+
+  const currentPage = pageInfo[location.pathname] || {
+    title: "Buy or Bye",
+    eyebrow: "YOUR SHOPPING SPACE",
+  };
 
   return (
     <div className="app-shell">
-      <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <Sidebar
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+      />
 
       <div className="main-shell">
         <header className="topbar">
           <div className="topbar-left">
             <button
+              type="button"
               className="icon-button mobile-menu-button"
               onClick={() => setMenuOpen(true)}
               aria-label="Open navigation"
+              aria-controls="app-sidebar"
+              aria-expanded={menuOpen}
             >
               <Menu size={21} />
             </button>
 
-            <div>
-              <span className="topbar-eyebrow">YOUR SPACE</span>
-              <h1>{title}</h1>
+            <div className="topbar-heading">
+              <span className="topbar-eyebrow">
+                {currentPage.eyebrow}
+              </span>
+
+              <h1>{currentPage.title}</h1>
             </div>
           </div>
 
@@ -44,10 +79,10 @@ export default function AppLayout() {
             <button
               type="button"
               className="button button-primary topbar-add"
-              onClick={() => navigate("/app/explore")}
+              onClick={() => navigate("/explore")}
             >
               <Plus size={17} />
-              <span>Add item</span>
+              <span>Find a product</span>
             </button>
           </div>
         </header>
@@ -57,8 +92,8 @@ export default function AppLayout() {
         </main>
 
         <footer className="app-footer">
-          <span>buy or bye</span>
-          <span>A more thoughtful way to shop.</span>
+          <span className="footer-brand">buy or bye</span>
+          <span>Thoughtful purchases start here.</span>
         </footer>
       </div>
     </div>

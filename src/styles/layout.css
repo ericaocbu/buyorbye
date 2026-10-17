@@ -1,6 +1,32 @@
+/* =========================================
+   APP SHELL
+   ========================================= */
+
 .app-shell {
   min-height: 100vh;
 }
+
+.main-shell {
+  min-height: 100vh;
+  margin-left: 248px;
+}
+
+.page-content {
+  width: 100%;
+  max-width: 1550px;
+  min-height: calc(100vh - 135px);
+  padding: 32px 38px 48px;
+  margin: 0 auto;
+}
+
+.content-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* =========================================
+   SIDEBAR BRAND
+   ========================================= */
 
 .sidebar {
   position: fixed;
@@ -9,126 +35,233 @@
   display: flex;
   flex-direction: column;
   width: 248px;
-  padding: 27px 17px 16px;
+  padding: 25px 15px 15px;
   background: #fffefa;
-  border-right: 1px solid var(--line);
+  border-right: 1px solid #e9e6dc;
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 11px;
-  padding: 0 8px 31px;
+  padding: 0 7px 32px;
 }
 
 .brand-icon {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
   color: white;
   background: var(--accent);
-  border-radius: 13px;
+  border-radius: 14px;
+  box-shadow: 0 3px 8px rgb(83 102 77 / 12%);
+}
+
+.brand-copy {
+  min-width: 0;
 }
 
 .brand-name {
   display: block;
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.8px;
+  color: #292d26;
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -1px;
+}
+
+.brand-name span {
+  color: #a9583d;
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .brand-tagline {
   display: block;
   margin-top: 2px;
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.nav-section-label,
-.eyebrow,
-.topbar-eyebrow {
+  color: #858477;
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.1px;
 }
 
-.nav-section-label {
+.sidebar-close,
+.mobile-menu-button {
+  display: none;
+}
+
+/* =========================================
+   SIDEBAR NAVIGATION
+   ========================================= */
+
+.sidebar-workspace-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 0 12px;
-  margin-bottom: 11px;
-  color: #a19e95;
+  margin-bottom: 12px;
+  color: #98968b;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.35px;
+}
+
+.sidebar-section-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  background: #a9583d;
+  border-radius: 50%;
 }
 
 .nav-list {
   display: grid;
-  gap: 5px;
+  gap: 4px;
 }
 
 .nav-link {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 43px;
+  min-height: 44px;
   padding: 0 12px;
-  color: #77766e;
-  border-radius: 9px;
-  font-size: 13px;
-  transition: background 160ms, color 160ms;
+  color: #77776d;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.nav-link-icon {
+  flex: 0 0 auto;
+  color: #96958a;
+  transition: color 160ms ease;
 }
 
 .nav-link:hover {
-  color: var(--text);
-  background: #f5f3ed;
+  color: #373b32;
+  background: #f7f5ef;
+  border-color: #efede4;
+}
+
+.nav-link:hover .nav-link-icon {
+  color: #697b60;
+}
+
+.nav-link:active {
+  transform: scale(0.99);
 }
 
 .nav-link-active {
-  color: #a9583d;
-  background: #f6ebe5;
-  font-weight: 600;
+  color: #965039;
+  background: #f7ece5;
+  border-color: #f0e0d6;
+  font-weight: 650;
 }
 
+.nav-link-active .nav-link-icon {
+  color: #a9583d;
+}
+
+.nav-link-active:hover {
+  color: #87452f;
+  background: #f5e7de;
+  border-color: #ead5c8;
+}
+
+/* =========================================
+   SIDEBAR BOTTOM
+   ========================================= */
+
 .sidebar-bottom {
+  padding-top: 20px;
   margin-top: auto;
 }
 
 .sidebar-note {
-  padding: 17px 14px;
-  margin-bottom: 18px;
-  background: #f4f1e9;
-  border-radius: 11px;
+  padding: 15px;
+  margin-bottom: 17px;
+  background: #f6f3eb;
+  border: 1px solid #ece7dc;
+  border-radius: 13px;
 }
 
-.note-sparkle {
-  color: var(--accent);
-  font-size: 19px;
+.sidebar-note-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: #627557;
+  background: #e8ede1;
+  border-radius: 9px;
 }
 
-.sidebar-note p {
-  margin: 7px 0 0;
-  color: #67665e;
-  font-family: "Playfair Display", serif;
-  font-size: 14px;
-  line-height: 1.5;
+.sidebar-note-title {
+  margin: 11px 0 5px;
+  color: #34372f;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.sidebar-note-copy {
+  margin: 0;
+  color: #79796e;
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.sidebar-note-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: #9a5239;
+  font-size: 10px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.sidebar-note-link:hover {
+  color: #713b29;
+}
+
+.sidebar-settings {
+  padding-bottom: 13px;
+  border-bottom: 1px solid #eeece4;
 }
 
 .profile-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 7px 3px;
-  margin-top: 12px;
-  border-top: 1px solid var(--line);
+  padding: 15px 7px 3px;
 }
 
 .avatar {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  color: #89563f;
-  background: #f0dfd2;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  color: #87513a;
+  background: #f1e1d5;
+  border: 1px solid #ead3c4;
   border-radius: 50%;
+  font-size: 12px;
   font-weight: 700;
+}
+
+.profile-copy {
+  min-width: 0;
 }
 
 .profile-row strong,
@@ -137,15 +270,20 @@
   font-size: 11px;
 }
 
-.profile-row span {
-  margin-top: 3px;
-  color: var(--muted);
+.profile-row strong {
+  color: #45463d;
+  font-weight: 650;
 }
 
-.main-shell {
-  min-height: 100vh;
-  margin-left: 248px;
+.profile-row span {
+  margin-top: 3px;
+  color: #939084;
+  font-size: 10px;
 }
+
+/* =========================================
+   TOPBAR
+   ========================================= */
 
 .topbar {
   position: sticky;
@@ -155,10 +293,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  min-height: 82px;
-  padding: 15px 38px;
-  background: rgb(248 247 243 / 94%);
-  border-bottom: 1px solid rgb(234 232 224 / 80%);
+  min-height: 84px;
+  padding: 15px 36px;
+  background: rgb(250 249 245 / 92%);
+  border-bottom: 1px solid #eae7de;
   backdrop-filter: blur(12px);
 }
 
@@ -169,16 +307,55 @@
   gap: 13px;
 }
 
+.topbar-left {
+  gap: 14px;
+  min-width: 0;
+}
+
+.topbar-heading {
+  min-width: 0;
+}
+
 .topbar-eyebrow {
-  color: #a19e95;
-  font-size: 9px;
+  color: #a9583d;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
 }
 
 .topbar h1 {
   margin: 4px 0 0;
-  font-size: 19px;
+  color: #2c3028;
+  font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.6px;
+  line-height: 1.3;
+}
+
+.topbar-actions {
+  flex-shrink: 0;
+}
+
+.topbar-add {
+  min-height: 40px;
+  padding: 0 15px;
+  gap: 8px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgb(70 57 43 / 7%);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.topbar-add:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgb(70 57 43 / 10%);
+}
+
+.topbar-add:active {
+  transform: translateY(0);
 }
 
 .topbar-search {
@@ -203,57 +380,92 @@
   font-size: 10px;
 }
 
-.mobile-menu-button,
-.sidebar-close {
+/* =========================================
+   ICON BUTTONS + MOBILE OVERLAY
+   ========================================= */
+
+.mobile-menu-button {
+  display: none;
+  width: 39px;
+  height: 39px;
+  place-items: center;
+  color: #55584d;
+  background: #fffefa;
+  border: 1px solid #e9e6dc;
+  border-radius: 10px;
+}
+
+.sidebar-overlay {
   display: none;
 }
 
-.page-content {
-  width: 100%;
-  max-width: 1550px;
-  min-height: calc(100vh - 135px);
-  padding: 32px 38px 48px;
-  margin: 0 auto;
-}
-
-.content-page {
-  max-width: 1400px;
-  margin: 0 auto;
-}
+/* =========================================
+   FOOTER
+   ========================================= */
 
 .app-footer {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 17px 38px;
-  color: #99968d;
+  padding: 18px 38px;
+  color: #99968b;
   border-top: 1px solid var(--line);
   font-size: 10px;
 }
 
+.footer-brand {
+  color: #66685d;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+/* =========================================
+   ACCESSIBILITY
+   ========================================= */
+
+.nav-link:focus-visible,
+.sidebar-note-link:focus-visible,
+.icon-button:focus-visible,
+.button:focus-visible {
+  outline: 2px solid #a9583d;
+  outline-offset: 3px;
+}
+
+/* =========================================
+   RESPONSIVE: TABLET
+   ========================================= */
+
 @media (max-width: 1150px) {
   .sidebar {
     width: 220px;
+    padding-right: 13px;
+    padding-left: 13px;
   }
 
   .main-shell {
     margin-left: 220px;
   }
 
-  .page-content {
+  .topbar {
     padding-right: 25px;
     padding-left: 25px;
   }
 
-  .topbar {
+  .page-content {
     padding-right: 25px;
     padding-left: 25px;
   }
 }
 
+/* =========================================
+   RESPONSIVE: MOBILE
+   ========================================= */
+
 @media (max-width: 760px) {
   .sidebar {
     width: 270px;
+    padding: 23px 15px 15px;
     transform: translateX(-100%);
     transition: transform 220ms ease;
     box-shadow: none;
@@ -262,6 +474,10 @@
   .sidebar-open {
     transform: translateX(0);
     box-shadow: 12px 0 35px rgb(0 0 0 / 10%);
+  }
+
+  .brand {
+    padding-bottom: 28px;
   }
 
   .sidebar-close,
@@ -277,8 +493,11 @@
     position: fixed;
     inset: 0;
     z-index: 25;
+    display: block;
     background: rgb(34 32 27 / 35%);
     border: 0;
+    cursor: pointer;
+    backdrop-filter: blur(2px);
   }
 
   .main-shell {
@@ -287,7 +506,21 @@
 
   .topbar {
     min-height: 72px;
-    padding: 12px 17px;
+    padding: 11px 17px;
+  }
+
+  .topbar-left {
+    gap: 11px;
+  }
+
+  .topbar-eyebrow {
+    font-size: 7px;
+    letter-spacing: 1.1px;
+  }
+
+  .topbar h1 {
+    margin-top: 3px;
+    font-size: 17px;
   }
 
   .topbar-search {
@@ -295,12 +528,9 @@
   }
 
   .topbar-add {
-    min-height: 36px;
-    padding: 0 10px;
-  }
-
-  .topbar h1 {
-    font-size: 17px;
+    min-height: 38px;
+    padding: 0 11px;
+    font-size: 10px;
   }
 
   .page-content {
@@ -309,17 +539,52 @@
   }
 
   .app-footer {
+    flex-wrap: wrap;
     padding: 15px 17px;
+    font-size: 9px;
   }
 }
 
+/* =========================================
+   RESPONSIVE: SMALL MOBILE
+   ========================================= */
+
 @media (max-width: 390px) {
-  .topbar-add span {
-    display: none;
+  .topbar {
+    gap: 8px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .topbar-left {
+    gap: 8px;
+  }
+
+  .topbar h1 {
+    font-size: 15px;
   }
 
   .topbar-add {
-    width: 38px;
+    width: 37px;
+    min-width: 37px;
+    justify-content: center;
     padding: 0;
+  }
+
+  .topbar-add span {
+    display: none;
+  }
+}
+
+/* =========================================
+   REDUCED MOTION
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-link,
+  .nav-link-icon,
+  .topbar-add,
+  .sidebar {
+    transition: none;
   }
 }

@@ -1,3 +1,4 @@
+
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -9,15 +10,42 @@ import {
   Settings,
   ShoppingBag,
   X,
+  Sparkles,
+  ArrowUpRight,
 } from "lucide-react";
 
 const navigation = [
-  { label: "Dashboard", path: "/app", icon: LayoutDashboard, end: true },
-  { label: "Explore", path: "/app/explore", icon: Search },
-  { label: "Compare", path: "/app/compare", icon: GitCompareArrows },
-  { label: "My List", path: "/app/list", icon: Heart },
-  { label: "Evaluations", path: "/app/evaluations", icon: ClipboardCheck },
-  { label: "Decision History", path: "/app/history", icon: History },
+  {
+    label: "Dashboard",
+    path: "/",
+    icon: LayoutDashboard,
+    end: true,
+  },
+  {
+    label: "Explore products",
+    path: "/explore",
+    icon: Search,
+  },
+  {
+    label: "Compare products",
+    path: "/compare",
+    icon: GitCompareArrows,
+  },
+  {
+    label: "My wishlist",
+    path: "/list",
+    icon: Heart,
+  },
+  {
+    label: "Purchase evaluations",
+    path: "/evaluations",
+    icon: ClipboardCheck,
+  },
+  {
+    label: "Decision history",
+    path: "/history",
+    icon: History,
+  },
 ];
 
 function getNavLinkClass({ isActive }) {
@@ -43,12 +71,16 @@ export default function Sidebar({ open, onClose }) {
       >
         <div className="brand">
           <div className="brand-icon">
-            <ShoppingBag size={21} aria-hidden="true" />
+            <ShoppingBag size={21} strokeWidth={1.8} aria-hidden="true" />
           </div>
 
-          <div>
-            <span className="brand-name">buy or bye</span>
-            <span className="brand-tagline">Shop with intention.</span>
+          <div className="brand-copy">
+            <span className="brand-name">
+              buy <span>or</span> bye
+            </span>
+            <span className="brand-tagline">
+              Shop with intention.
+            </span>
           </div>
 
           <button
@@ -61,7 +93,10 @@ export default function Sidebar({ open, onClose }) {
           </button>
         </div>
 
-        <div className="nav-section-label">WORKSPACE</div>
+        <div className="sidebar-workspace-label">
+          <span className="sidebar-section-dot" />
+          YOUR WORKSPACE
+        </div>
 
         <nav className="nav-list" aria-label="Workspace">
           {navigation.map(({ label, path, icon: Icon, end }) => (
@@ -72,7 +107,12 @@ export default function Sidebar({ open, onClose }) {
               onClick={onClose}
               className={getNavLinkClass}
             >
-              <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
+              <Icon
+                className="nav-link-icon"
+                size={18}
+                strokeWidth={1.8}
+                aria-hidden="true"
+              />
               <span>{label}</span>
             </NavLink>
           ))}
@@ -80,24 +120,52 @@ export default function Sidebar({ open, onClose }) {
 
         <div className="sidebar-bottom">
           <div className="sidebar-note">
-            <span className="note-sparkle" aria-hidden="true">✳</span>
-            <p>Start shopping without regret!</p>
+            <div className="sidebar-note-icon">
+              <Sparkles size={16} aria-hidden="true" />
+            </div>
+
+            <p className="sidebar-note-title">
+              Pause before you purchase.
+            </p>
+
+            <p className="sidebar-note-copy">
+              A little comparison can make a big difference.
+            </p>
+
+            <NavLink
+              to="/explore"
+              onClick={onClose}
+              className="sidebar-note-link"
+            >
+              Explore products
+              <ArrowUpRight size={14} aria-hidden="true" />
+            </NavLink>
           </div>
 
-          <NavLink
-            to="/app/settings"
-            onClick={onClose}
-            className={getNavLinkClass}
-          >
-            <Settings size={19} strokeWidth={1.8} aria-hidden="true" />
-            <span>Settings</span>
-          </NavLink>
+          <div className="sidebar-settings">
+            <NavLink
+              to="/settings"
+              onClick={onClose}
+              className={getNavLinkClass}
+            >
+              <Settings
+                className="nav-link-icon"
+                size={18}
+                strokeWidth={1.8}
+                aria-hidden="true"
+              />
+              <span>Settings</span>
+            </NavLink>
+          </div>
 
           <div className="profile-row">
-            <div className="avatar" aria-hidden="true">Y</div>
-            <div>
+            <div className="avatar" aria-hidden="true">
+              Y
+            </div>
+
+            <div className="profile-copy">
               <strong>Your workspace</strong>
-              <span>Personal workspace</span>
+              <span>Personal shopping space</span>
             </div>
           </div>
         </div>
