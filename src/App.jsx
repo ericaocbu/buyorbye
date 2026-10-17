@@ -1,5 +1,4 @@
-
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
 import ExplorePage from "./pages/ExplorePage";
@@ -12,7 +11,6 @@ import SettingsPage from "./pages/SettingsPage";
 export default function App() {
   return (
     <Routes>
-      {/* Dashboard at the main website URL */}
       <Route path="/" element={<AppLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="explore" element={<ExplorePage />} />
@@ -23,12 +21,20 @@ export default function App() {
         <Route path="settings" element={<SettingsPage />} />
       </Route>
 
-      {/* Keep old /app links working */}
-      <Route path="/app" element={<Navigate to="/" replace />} />
-      <Route path="/app/*" element={<Navigate to="/" replace />} />
-
-      {/* Redirect unknown URLs to the homepage */}
+      <Route path="/app/*" element={<LegacyAppRedirect />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+  );
+}
+
+function LegacyAppRedirect() {
+  const location = useLocation();
+  const newPath = location.pathname.replace(/^\/app(?=\/|$)/, "");
+
+  return (
+    <Navigate
+      to={{ pathname: newPath || "/", search: location.search, hash: location.hash }}
+      replace
+    />
   );
 }
