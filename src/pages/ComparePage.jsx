@@ -92,15 +92,6 @@ export default function ComparePage() {
 
   return (
     <div className="content-page">
-      <div className="page-intro">
-        <span className="eyebrow">COMPARE YOUR OPTIONS</span>
-        <h2>Find the better fit.</h2>
-        <p>
-          Look at your options side by side and decide which one makes the most
-          sense for you.
-        </p>
-      </div>
-
       {selectedProducts.length < 2 ? (
         <div className="empty-state">
           <div className="empty-state-icon">

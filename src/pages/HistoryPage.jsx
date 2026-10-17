@@ -234,7 +234,7 @@ export default function HistoryPage() {
         <Clock3 size={16} />
         <p>
           Changed your mind? Edit an evaluation to update your answers and
-          decision. Your existing entry will be updated rather than duplicated.
+          decision.
         </p>
       </div>
     </section>

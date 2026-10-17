@@ -42,12 +42,6 @@ export default function WishlistPage() {
 
   return (
     <div className="content-page">
-      <div className="page-intro">
-        <span className="eyebrow">YOUR COLLECTION</span>
-        <h2>My list</h2>
-        <p>Everything you're considering, all in one place.</p>
-      </div>
-
       {wishlist.length > 0 ? (
         <>
           <div className="section-heading compact-heading">
