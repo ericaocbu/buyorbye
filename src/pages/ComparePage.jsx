@@ -27,7 +27,7 @@ export default function ComparePage() {
       (product) => product.id !== productId,
     );
 
-    navigate("/app/compare", {
+    navigate("/compare", {
       state: { selectedProducts: remainingProducts },
       replace: true,
     });
@@ -113,7 +113,7 @@ export default function ComparePage() {
             stack up.
           </p>
 
-          <Link to="/app/explore" className="button button-primary">
+          <Link to="/explore" className="button button-primary">
             Explore products <ArrowRight size={16} />
           </Link>
         </div>
@@ -128,7 +128,7 @@ export default function ComparePage() {
               </p>
             </div>
 
-            <Link to="/app/explore" className="button button-secondary">
+            <Link to="/explore" className="button button-secondary">
               Add more products
             </Link>
           </div>

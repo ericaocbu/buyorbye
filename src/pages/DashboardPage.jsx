@@ -66,7 +66,7 @@ export default function DashboardPage() {
       return;
     }
 
-    navigate("/app/compare", {
+    navigate("/compare", {
       state: { selectedProducts },
     });
   }
@@ -95,7 +95,7 @@ export default function DashboardPage() {
             <button
               type="button"
               className="button button-primary"
-              onClick={() => navigate("/app/explore")}
+              onClick={() => navigate("/explore")}
             >
               Explore products
               <ArrowRight size={16} />
@@ -177,7 +177,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 className="dashboard-stat-link"
-                onClick={() => navigate("/app/list")}
+                onClick={() => navigate("/list")}
               >
                 View wishlist
                 <ArrowRight size={12} />
@@ -198,7 +198,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 className="dashboard-stat-link"
-                onClick={() => navigate("/app/evaluations")}
+                onClick={() => navigate("/evaluations")}
               >
                 Review decisions
                 <ArrowRight size={12} />
@@ -219,7 +219,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 className="dashboard-stat-link"
-                onClick={() => navigate("/app/history")}
+                onClick={() => navigate("/history")}
               >
                 View history
                 <ArrowRight size={12} />
@@ -246,7 +246,7 @@ export default function DashboardPage() {
             <button
               type="button"
               className="dashboard-secondary-action"
-              onClick={() => navigate("/app/list")}
+              onClick={() => navigate("/list")}
             >
               View all
               <ArrowRight size={15} />
@@ -272,7 +272,7 @@ export default function DashboardPage() {
             <button
               type="button"
               className="button button-primary"
-              onClick={() => navigate("/app/explore")}
+              onClick={() => navigate("/explore")}
             >
               Find something
               <ArrowRight size={15} />
@@ -334,7 +334,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 className="dashboard-view-more"
-                onClick={() => navigate("/app/list")}
+                onClick={() => navigate("/list")}
               >
                 See all {wishlist.length} saved products
                 <ArrowRight size={15} />

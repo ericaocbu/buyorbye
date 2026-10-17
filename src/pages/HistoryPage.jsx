@@ -61,7 +61,7 @@ export default function HistoryPage() {
   });
 
   function editEvaluation(evaluation) {
-    navigate("/app/evaluations", {
+    navigate("/evaluations", {
       state: { product: evaluation.product },
     });
   }
@@ -92,7 +92,7 @@ export default function HistoryPage() {
           <button
             type="button"
             className="button button-primary"
-            onClick={() => navigate("/app/explore")}
+            onClick={() => navigate("/explore")}
           >
             Explore products
             <ArrowRight size={16} />

@@ -143,7 +143,7 @@ export default function ExplorePage() {
       selected.includes(product.id),
     );
 
-    navigate("/app/compare", {
+    navigate("/compare", {
       state: { selectedProducts },
     });
   }

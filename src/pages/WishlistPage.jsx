@@ -35,7 +35,7 @@ export default function WishlistPage() {
   function openComparison() {
     if (selectedProducts.length < 2) return;
 
-    navigate("/app/compare", {
+    navigate("/compare", {
       state: { selectedProducts },
     });
   }
@@ -118,7 +118,7 @@ export default function WishlistPage() {
           <button
             type="button"
             className="button button-primary"
-            onClick={() => navigate("/app/explore")}
+            onClick={() => navigate("/explore")}
           >
             Explore products
           </button>

@@ -522,7 +522,7 @@ export default function EvaluationsPage() {
           <button
             type="button"
             className="button button-primary"
-            onClick={() => navigate("/app/explore")}
+            onClick={() => navigate("/explore")}
           >
             Explore products <ArrowRight size={16} />
           </button>
@@ -808,7 +808,7 @@ export default function EvaluationsPage() {
                 <button
                   type="button"
                   className="button button-primary evaluation-save"
-                  onClick={() => navigate("/app/history")}
+                  onClick={() => navigate("/history")}
                 >
                   View decision history <ArrowRight size={16} />
                 </button>
