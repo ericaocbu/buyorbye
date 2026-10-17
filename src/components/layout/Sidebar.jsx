@@ -129,7 +129,7 @@ export default function Sidebar({ open, onClose }) {
             </p>
 
             <p className="sidebar-note-copy">
-              A little comparison can make a big difference.
+              Look for alternatives and compare.
             </p>
 
             <NavLink
