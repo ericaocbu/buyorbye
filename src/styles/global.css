@@ -1,24 +1,35 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap");
 
+
 :root {
   font-family: "DM Sans", sans-serif;
-  color: #292923;
-  background: #f8f7f3;
+  color: #292D26;
+  background: #F8F7F2;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 
-  --bg: #f8f7f3;
-  --surface: #ffffff;
-  --text: #292923;
-  --muted: #89877f;
-  --line: #eae8e0;
-  --accent: #bf6b4e;
-  --accent-light: #f5e9e2;
-  --sage: #e8eee5;
-  --dark: #30362e;
+  /* Brand colors */
+  --bg: #F8F7F2;
+  --surface: #FFFFFF;
+  --text: #292D26;
+  --muted: #77786F;
+  --line: #E7E5DC;
+
+  /* Olive and sage palette */
+  --accent: #52664A;
+  --accent-light: #E8E9D8;
+  --sage: #E8E9D8;
+  --dark: #30392D;
+
+  /* Supporting colors */
+  --accent-hover: #40523A;
+  --accent-border: #C6CFB9;
+  --accent-text: #40523A;
+
   --radius: 14px;
 }
+
 
 * {
   box-sizing: border-box;
@@ -76,12 +87,12 @@ a {
 }
 
 .button-primary {
-  color: white;
+  color: #FFFFFF;
   background: var(--accent);
 }
 
 .button-primary:hover {
-  background: #a95a40;
+  background: var(--accent-hover);
 }
 
 .button-secondary {
@@ -109,9 +120,9 @@ a {
 }
 
 .button-selected {
-  color: #a9583d;
+  color: var(--accent-text);
   background: var(--accent-light);
-  border-color: #e6c5b5;
+  border-color: var(--accent-border);
 }
 
 .icon-button {

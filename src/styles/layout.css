@@ -72,7 +72,7 @@
 }
 
 .brand-name span {
-  color: #a9583d;
+  color: var(--accent);
   font-family: "Playfair Display", Georgia, serif;
   font-weight: 500;
   font-style: italic;
@@ -111,7 +111,7 @@
   width: 6px;
   height: 6px;
   flex: 0 0 auto;
-  background: #a9583d;
+  background: var(--accent);
   border-radius: 50%;
 }
 
@@ -161,20 +161,20 @@
 }
 
 .nav-link-active {
-  color: #965039;
-  background: #f7ece5;
-  border-color: #f0e0d6;
+  color: var(--accent-text);
+  background: var(--accent-light);
+  border-color: var(--accent-border);
   font-weight: 650;
 }
 
 .nav-link-active .nav-link-icon {
-  color: #a9583d;
+  color: var(--accent);
 }
 
 .nav-link-active:hover {
-  color: #87452f;
-  background: #f5e7de;
-  border-color: #ead5c8;
+  color: var(--accent-text);
+  background: #DDE2D2;
+  border-color: #C6CFB9;
 }
 
 /* =========================================
@@ -199,8 +199,8 @@
   place-items: center;
   width: 30px;
   height: 30px;
-  color: #627557;
-  background: #e8ede1;
+  color: var(--accent);
+  background: var(--accent-light);
   border-radius: 9px;
 }
 
@@ -224,14 +224,14 @@
   align-items: center;
   gap: 6px;
   margin-top: 12px;
-  color: #9a5239;
+  color: var(--accent);
   font-size: 10px;
   font-weight: 650;
   text-decoration: none;
 }
 
 .sidebar-note-link:hover {
-  color: #713b29;
+  color: var(--accent-hover);
 }
 
 .sidebar-settings {
@@ -252,9 +252,9 @@
   width: 36px;
   height: 36px;
   flex: 0 0 auto;
-  color: #87513a;
-  background: #f1e1d5;
-  border: 1px solid #ead3c4;
+  color: var(--accent-text);
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
   border-radius: 50%;
   font-size: 12px;
   font-weight: 700;
@@ -317,7 +317,7 @@
 }
 
 .topbar-eyebrow {
-  color: #a9583d;
+  color: var(--accent);
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 1.4px;
@@ -428,7 +428,7 @@
 .sidebar-note-link:focus-visible,
 .icon-button:focus-visible,
 .button:focus-visible {
-  outline: 2px solid #a9583d;
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
