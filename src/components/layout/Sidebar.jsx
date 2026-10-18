@@ -1,4 +1,4 @@
-
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -12,9 +12,10 @@ import {
   X,
   Sparkles,
   ArrowUpRight,
-  Compass, 
-  Scale, 
-  CheckCircle2
+  Compass,
+  Scale,
+  CheckCircle2,
+  ChevronDown,
 } from "lucide-react";
 
 const navigation = [
@@ -56,6 +57,8 @@ function getNavLinkClass({ isActive }) {
 }
 
 export default function Sidebar({ open, onClose }) {
+  const [guideExpanded, setGuideExpanded] = useState(false);
+
   return (
     <>
       {open && (
@@ -74,7 +77,11 @@ export default function Sidebar({ open, onClose }) {
       >
         <div className="brand">
           <div className="brand-icon">
-            <ShoppingBag size={21} strokeWidth={1.8} aria-hidden="true" />
+            <ShoppingBag
+              size={21}
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
           </div>
 
           <div className="brand-copy">
@@ -160,52 +167,99 @@ export default function Sidebar({ open, onClose }) {
               <span>Settings</span>
             </NavLink>
           </div>
-          
-          <div className="how-it-works">
-            <div className="how-it-works-heading">
-              <div className="how-it-works-icon" aria-hidden="true">
-                <Compass size={18} />
-              </div>
 
-              <div className="how-it-works-copy">
-                <strong>How Buy or Bye works</strong>
-                <span>Your guide to smarter shopping</span>
-              </div>
-            </div>
+          <div
+            className={`how-it-works ${
+              guideExpanded ? "how-it-works-expanded" : ""
+            }`}
+          >
+            <button
+              type="button"
+              className="how-it-works-toggle"
+              onClick={() => setGuideExpanded((expanded) => !expanded)}
+              aria-expanded={guideExpanded}
+              aria-controls="how-it-works-content"
+            >
+              <span className="how-it-works-heading">
+                <span
+                  className="how-it-works-icon"
+                  aria-hidden="true"
+                >
+                  <Compass size={18} />
+                </span>
 
-            <div className="how-it-works-steps">
-              <div className="how-it-works-step">
-                <div className="how-it-works-step-icon" aria-hidden="true">
-                  <Search size={15} />
-                </div>
-                <div>
-                  <strong>01. Find it</strong>
-                  <span>Discover products and compare prices.</span>
-                </div>
-              </div>
+                <span className="how-it-works-copy">
+                  <strong>How Buy or Bye works</strong>
+                  <span>Your guide to smarter shopping</span>
+                </span>
+              </span>
 
-              <div className="how-it-works-step">
-                <div className="how-it-works-step-icon" aria-hidden="true">
-                  <Scale size={15} />
-                </div>
-                <div>
-                  <strong>02. Evaluate it</strong>
-                  <span>Weigh your options before spending.</span>
-                </div>
-              </div>
+              <ChevronDown
+                className="how-it-works-chevron"
+                size={16}
+                aria-hidden="true"
+              />
+            </button>
 
-              <div className="how-it-works-step">
-                <div className="how-it-works-step-icon" aria-hidden="true">
-                  <CheckCircle2 size={15} />
+            {guideExpanded && (
+              <div
+                className="how-it-works-steps"
+                id="how-it-works-content"
+              >
+                <div className="how-it-works-step">
+                  <div
+                    className="how-it-works-step-icon"
+                    aria-hidden="true"
+                  >
+                    <Search size={15} />
+                  </div>
+                  <div>
+                    <strong>01. Find it</strong>
+                    <span>
+                      Discover products and compare prices.
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <strong>03. Decide</strong>
-                  <span>Buy it, wait, or say bye.</span>
+
+                <div className="how-it-works-step">
+                  <div
+                    className="how-it-works-step-icon"
+                    aria-hidden="true"
+                  >
+                    <Scale size={15} />
+                  </div>
+                  <div>
+                    <strong>02. Evaluate it</strong>
+                    <span>
+                      Weigh your options before spending.
+                    </span>
+                  </div>
                 </div>
+
+                <div className="how-it-works-step">
+                  <div
+                    className="how-it-works-step-icon"
+                    aria-hidden="true"
+                  >
+                    <CheckCircle2 size={15} />
+                  </div>
+                  <div>
+                    <strong>03. Decide</strong>
+                    <span>Buy it, wait, or say bye.</span>
+                  </div>
+                </div>
+
+                <NavLink
+                  to="/explore"
+                  onClick={onClose}
+                  className="how-it-works-link"
+                >
+                  Explore products
+                  <ArrowUpRight size={14} aria-hidden="true" />
+                </NavLink>
               </div>
-            </div>
+            )}
           </div>
-          
         </div>
       </aside>
     </>

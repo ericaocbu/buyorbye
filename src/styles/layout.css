@@ -239,15 +239,45 @@
   border-bottom: 1px solid #eeece4;
 }
 
+
 /* =========================================
-   HOW BUY OR BYE WORKS — SIDEBAR GUIDE
+   HOW BUY OR BYE WORKS — COLLAPSIBLE GUIDE
    ========================================= */
 
 .how-it-works {
   margin-top: 20px;
-  padding: 14px 12px;
+  overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 180ms ease;
+}
+
+.how-it-works-expanded {
+  border-color: var(--accent-border);
+}
+
+.how-it-works-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 12px;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.how-it-works-toggle:hover {
+  background: var(--bg);
+}
+
+.how-it-works-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -3px;
   border-radius: var(--radius);
 }
 
@@ -255,7 +285,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 16px;
+  min-width: 0;
 }
 
 .how-it-works-icon {
@@ -293,10 +323,22 @@
   line-height: 1.4;
 }
 
+.how-it-works-chevron {
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition: transform 180ms ease;
+}
+
+.how-it-works-expanded .how-it-works-chevron {
+  transform: rotate(180deg);
+}
+
 .how-it-works-steps {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  padding: 2px 12px 14px;
+  animation: guide-reveal 180ms ease;
 }
 
 .how-it-works-step {
@@ -337,6 +379,47 @@
   color: var(--muted);
   font-size: 10px;
   line-height: 1.5;
+}
+
+.how-it-works-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+  padding: 10px 0 0;
+  color: var(--accent-text);
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.how-it-works-link:hover {
+  color: var(--accent-hover);
+}
+
+@keyframes guide-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .how-it-works,
+  .how-it-works-chevron {
+    transition: none;
+  }
+
+  .how-it-works-steps {
+    animation: none;
+  }
 }
 
 /* =========================================
