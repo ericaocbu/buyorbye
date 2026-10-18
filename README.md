@@ -4,6 +4,28 @@ A thoughtful shopping companion that helps you decide whether a product is worth
 
 Buy or Bye brings product discovery, price comparisons, wishlists, and personalized purchase evaluations into one place. Instead of making impulse purchases, users can explore alternatives, weigh their options, and make more intentional decisions based on their needs and budgets.
 
+[**Live Demo →**](https://buyorbyebye.vercel.app/)
+
+## Preview
+
+### Dashboard Page
+
+<p align="center">
+  <img src="public/imgs/dashboard.png" alt="Dashboard Page Screenshot" width="100%"/>
+</p>
+
+### Product Evaluations Page
+
+<p align="center">
+  <img src="public/imgs/evaluations.png" alt="Dashboard Page Screenshot" width="100%"/>
+</p>
+
+### Decision History Page
+
+<p align="center">
+  <img src="public/imgs/history.png" alt="Dashboard Page Screenshot" width="100%"/>
+</p>
+
 ## Features
 
 - **Product Discovery** — Search for real products and explore product details, images, prices, and retailers.
