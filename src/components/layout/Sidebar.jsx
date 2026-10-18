@@ -129,28 +129,6 @@ export default function Sidebar({ open, onClose }) {
         </nav>
 
         <div className="sidebar-bottom">
-          <div className="sidebar-note">
-            <div className="sidebar-note-icon">
-              <Sparkles size={16} aria-hidden="true" />
-            </div>
-
-            <p className="sidebar-note-title">
-              Pause before you purchase.
-            </p>
-
-            <p className="sidebar-note-copy">
-              Look for alternatives and compare.
-            </p>
-
-            <NavLink
-              to="/explore"
-              onClick={onClose}
-              className="sidebar-note-link"
-            >
-              Explore products
-              <ArrowUpRight size={14} aria-hidden="true" />
-            </NavLink>
-          </div>
 
           <div className="sidebar-settings">
             <NavLink
