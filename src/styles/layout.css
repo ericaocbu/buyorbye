@@ -35,9 +35,13 @@
   display: flex;
   flex-direction: column;
   width: 248px;
+  height: 100vh;
+  height: 100dvh;
   padding: 25px 15px 15px;
   background: #fffefa;
   border-right: 1px solid #e9e6dc;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .brand {
@@ -184,6 +188,7 @@
 .sidebar-bottom {
   padding-top: 20px;
   margin-top: auto;
+  flex-shrink: 0;
 }
 
 .sidebar-note {
