@@ -12,6 +12,9 @@ import {
   X,
   Sparkles,
   ArrowUpRight,
+  Compass, 
+  Scale, 
+  CheckCircle2
 } from "lucide-react";
 
 const navigation = [
@@ -157,17 +160,52 @@ export default function Sidebar({ open, onClose }) {
               <span>Settings</span>
             </NavLink>
           </div>
+          
+          <div className="how-it-works">
+            <div className="how-it-works-heading">
+              <div className="how-it-works-icon" aria-hidden="true">
+                <Compass size={18} />
+              </div>
 
-          <div className="profile-row">
-            <div className="avatar" aria-hidden="true">
-              Y
+              <div className="how-it-works-copy">
+                <strong>How Buy or Bye works</strong>
+                <span>Your guide to smarter shopping</span>
+              </div>
             </div>
 
-            <div className="profile-copy">
-              <strong>Your workspace</strong>
-              <span>Personal shopping space</span>
+            <div className="how-it-works-steps">
+              <div className="how-it-works-step">
+                <div className="how-it-works-step-icon" aria-hidden="true">
+                  <Search size={15} />
+                </div>
+                <div>
+                  <strong>01. Find it</strong>
+                  <span>Discover products and compare prices.</span>
+                </div>
+              </div>
+
+              <div className="how-it-works-step">
+                <div className="how-it-works-step-icon" aria-hidden="true">
+                  <Scale size={15} />
+                </div>
+                <div>
+                  <strong>02. Evaluate it</strong>
+                  <span>Weigh your options before spending.</span>
+                </div>
+              </div>
+
+              <div className="how-it-works-step">
+                <div className="how-it-works-step-icon" aria-hidden="true">
+                  <CheckCircle2 size={15} />
+                </div>
+                <div>
+                  <strong>03. Decide</strong>
+                  <span>Buy it, wait, or say bye.</span>
+                </div>
+              </div>
             </div>
           </div>
+          
         </div>
       </aside>
     </>

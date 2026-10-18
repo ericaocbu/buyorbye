@@ -239,14 +239,26 @@
   border-bottom: 1px solid #eeece4;
 }
 
-.profile-row {
+/* =========================================
+   HOW BUY OR BYE WORKS — SIDEBAR GUIDE
+   ========================================= */
+
+.how-it-works {
+  margin-top: 20px;
+  padding: 14px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.how-it-works-heading {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 15px 7px 3px;
+  margin-bottom: 16px;
 }
 
-.avatar {
+.how-it-works-icon {
   display: grid;
   place-items: center;
   width: 36px;
@@ -255,30 +267,76 @@
   color: var(--accent-text);
   background: var(--accent-light);
   border: 1px solid var(--accent-border);
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: 700;
+  border-radius: 10px;
 }
 
-.profile-copy {
+.how-it-works-copy {
   min-width: 0;
 }
 
-.profile-row strong,
-.profile-row span {
+.how-it-works-copy strong,
+.how-it-works-copy span {
   display: block;
+}
+
+.how-it-works-copy strong {
+  color: var(--text);
   font-size: 11px;
-}
-
-.profile-row strong {
-  color: #45463d;
   font-weight: 650;
+  line-height: 1.4;
 }
 
-.profile-row span {
+.how-it-works-copy span {
   margin-top: 3px;
-  color: #939084;
+  color: var(--muted);
   font-size: 10px;
+  line-height: 1.4;
+}
+
+.how-it-works-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.how-it-works-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.how-it-works-step-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  color: var(--accent-text);
+  background: var(--accent-light);
+  border-radius: 8px;
+}
+
+.how-it-works-step > div:last-child {
+  min-width: 0;
+}
+
+.how-it-works-step strong,
+.how-it-works-step span {
+  display: block;
+}
+
+.how-it-works-step strong {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.how-it-works-step span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
 }
 
 /* =========================================
